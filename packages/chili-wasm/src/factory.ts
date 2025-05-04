@@ -1,11 +1,14 @@
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
+
 import {
-    gc,
     ICompound,
     IEdge,
     IFace,
     IShape,
     IShapeConverter,
     IShapeFactory,
+    IShell,
     ISolid,
     IVertex,
     IWire,
@@ -89,7 +92,7 @@ export class ShapeFactory implements IShapeFactory {
         return Result.err("Not OccShape");
     }
 
-    removeFaces(shape: IShape, faces: IFace[]): Result<IShape> {
+    removeFeature(shape: IShape, faces: IFace[]): Result<IShape> {
         if (!(shape instanceof OccShape)) {
             return Result.err("Not OccShape");
         }
@@ -99,7 +102,18 @@ export class ShapeFactory implements IShapeFactory {
             }
             return x.shape;
         });
-        return Result.ok(OcctHelper.wrapShape(wasm.Shape.removeFaces(shape.shape, occFaces)));
+        return Result.ok(OcctHelper.wrapShape(wasm.Shape.removeFeature(shape.shape, occFaces)));
+    }
+
+    removeSubShape(shape: IShape, subShapes: IShape[]): IShape {
+        const occShape = ensureOccShape(shape);
+        const occSubShapes = ensureOccShape(subShapes);
+        return OcctHelper.wrapShape(wasm.Shape.removeSubShape(occShape[0], occSubShapes));
+    }
+
+    replaceSubShape(shape: IShape, subShape: IShape, newSubShape: IShape): IShape {
+        const [occShape, occSubShape, occNewSubShape] = ensureOccShape([shape, subShape, newSubShape]);
+        return OcctHelper.wrapShape(wasm.Shape.replaceSubShape(occShape, occSubShape, occNewSubShape));
     }
 
     face(wire: IWire[]): Result<IFace> {
@@ -195,6 +209,12 @@ export class ShapeFactory implements IShapeFactory {
     }
     wire(edges: IEdge[]): Result<IWire> {
         return convertShapeResult(wasm.ShapeFactory.wire(ensureOccShape(edges))) as Result<IWire>;
+    }
+    shell(faces: IFace[]): Result<IShell> {
+        return convertShapeResult(wasm.ShapeFactory.shell(ensureOccShape(faces))) as Result<IShell>;
+    }
+    solid(shells: IShell[]): Result<ISolid> {
+        return convertShapeResult(wasm.ShapeFactory.solid(ensureOccShape(shells))) as Result<ISolid>;
     }
     prism(shape: IShape, vec: XYZ): Result<IShape> {
         if (vec.length() === 0) {

@@ -1,4 +1,5 @@
-// Copyright 2022-2023 the Chili authors. All rights reserved. AGPL-3.0 license.
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 
 import { Locale } from "./i18n";
 
@@ -59,12 +60,14 @@ export default {
         "command.chamfer": "倒角",
         "command.circle": "圆",
         "command.copy": "复制",
+        "command.copySubShape": "子形状",
         "command.delete": "删除",
         "command.document.new": "新建文档",
         "command.document.open": "打开文档",
         "command.document.save": "保存文档",
         "command.document.saveAs": "另存为",
         "command.document.saveToFile": "保存到文件",
+        "command.explode": "分解",
         "command.export": "导出",
         "command.faceable.isFace": "面",
         "command.fillet": "圆角",
@@ -82,7 +85,8 @@ export default {
         "command.prism": "拉伸",
         "command.rect": "矩形",
         "command.redo": "重做",
-        "command.removeFaces": "移除面",
+        "command.removeFeature": "移除特征",
+        "command.removeSubShapes": "移除子形状",
         "command.revol": "旋转",
         "command.rotate": "旋转",
         "command.section": "相交线",
@@ -91,6 +95,8 @@ export default {
         "command.thickSolid": "抽壳",
         "command.toFace": "转面",
         "command.toWire": "转多段线",
+        "command.toShell": "转壳体",
+        "command.toSolid": "转实体",
         "command.trim": "修剪",
         "command.undo": "撤销",
         "common.angle": "角度",
@@ -210,6 +216,7 @@ export default {
         "vertex.point": "点",
         "workingPlane.dynamic": "动态",
         "workingPlane.alignToPlane": "对齐",
+        "workingPlane.fromSection": "从截面",
         "workingPlane.set": "设置",
         "test.performace": "性能测试",
     },

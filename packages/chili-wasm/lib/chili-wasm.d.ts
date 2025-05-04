@@ -1,3 +1,5 @@
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 // TypeScript bindings for emscripten-generated code.  Automatically generated at compile time.
 declare namespace RuntimeExports {
     let HEAPF32: any;
@@ -601,7 +603,9 @@ interface EmbindModule {
         wire(_0: Array<TopoDS_Edge>): ShapeResult;
         fillet(_0: TopoDS_Shape, _1: Array<TopoDS_Edge>, _2: number): ShapeResult;
         chamfer(_0: TopoDS_Shape, _1: Array<TopoDS_Edge>, _2: number): ShapeResult;
+        shell(_0: Array<TopoDS_Face>): ShapeResult;
         face(_0: Array<TopoDS_Wire>): ShapeResult;
+        solid(_0: Array<TopoDS_Shell>): ShapeResult;
         cone(_0: Vector3, _1: Vector3, _2: number, _3: number, _4: number): ShapeResult;
         sphere(_0: Vector3, _1: number): ShapeResult;
         ellipsoid(_0: Vector3, _1: Vector3, _2: Vector3, _3: number, _4: number, _5: number): ShapeResult;
@@ -778,11 +782,14 @@ interface EmbindModule {
         copy(_0: TopoDS_Shape): TopoDS_Shape;
         sectionSS(_0: TopoDS_Shape, _1: TopoDS_Shape): TopoDS_Shape;
         isClosed(_0: TopoDS_Shape): boolean;
+        replaceSubShape(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: TopoDS_Shape): TopoDS_Shape;
+        sewing(_0: TopoDS_Shape, _1: TopoDS_Shape): TopoDS_Shape;
         findAncestor(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: TopAbs_ShapeEnum): Array<TopoDS_Shape>;
         findSubShapes(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum): Array<TopoDS_Shape>;
         iterShape(_0: TopoDS_Shape): Array<TopoDS_Shape>;
         splitByEdgeOrWires(_0: TopoDS_Shape, _1: Array<TopoDS_Shape>): TopoDS_Shape;
-        removeFaces(_0: TopoDS_Shape, _1: Array<TopoDS_Shape>): TopoDS_Shape;
+        removeFeature(_0: TopoDS_Shape, _1: Array<TopoDS_Shape>): TopoDS_Shape;
+        removeSubShape(_0: TopoDS_Shape, _1: Array<TopoDS_Shape>): TopoDS_Shape;
         sectionSP(_0: TopoDS_Shape, _1: Pln): TopoDS_Shape;
     };
     Vertex: {

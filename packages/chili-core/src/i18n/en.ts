@@ -1,4 +1,5 @@
-// Copyright 2022-2023 the Chili authors. All rights reserved. AGPL-3.0 license.
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 
 import { Locale } from "./i18n";
 
@@ -53,6 +54,7 @@ export default {
         "command.pyramid": "Pyramid",
         "command.cylinder": "Cylinder",
         "command.cone": "Cone",
+        "command.copySubShape": "SubShape",
         "command.sphere": "Sphere",
         "command.ellipsoid": "Ellipsoid",
         "command.ellipse": "ellipse",
@@ -66,6 +68,7 @@ export default {
         "command.document.save": "Save",
         "command.document.saveAs": "Save As",
         "command.document.saveToFile": "Save To File",
+        "command.explode": "Explode",
         "command.export": "Export",
         "command.faceable.isFace": "Face",
         "command.fillet": "Fillet",
@@ -83,7 +86,8 @@ export default {
         "command.prism": "Prism",
         "command.rect": "Rectangle",
         "command.redo": "Redo",
-        "command.removeFaces": "Remove Faces",
+        "command.removeFeature": "Remove Feature",
+        "command.removeSubShapes": "Remove SubShapes",
         "command.revol": "Revol",
         "command.rotate": "Rotate",
         "command.section": "Section",
@@ -92,6 +96,8 @@ export default {
         "command.thickSolid": "Thick Solid",
         "command.toFace": "To Face",
         "command.toWire": "To Wire",
+        "command.toShell": "To Shell",
+        "command.toSolid": "To Solid",
         "command.trim": "Trim",
         "command.undo": "Undo",
         "common.angle": "Angle",
@@ -212,6 +218,7 @@ export default {
         "vertex.point": "Point",
         "workingPlane.dynamic": "Dynamic",
         "workingPlane.alignToPlane": "Align",
+        "workingPlane.fromSection": "From Section",
         "workingPlane.set": "Set",
         "test.performace": "Performace test",
     },

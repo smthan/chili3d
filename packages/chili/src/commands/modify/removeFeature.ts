@@ -1,4 +1,5 @@
-// Copyright 2022-2023 the Chili authors. All rights reserved. AGPL-3.0 license.
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 
 import {
     EditableShapeNode,
@@ -13,16 +14,16 @@ import { SelectShapeStep } from "../../step/selectStep";
 import { MultistepCommand } from "../multistepCommand";
 
 @command({
-    name: "modify.removeFaces",
-    display: "command.removeFaces",
-    icon: "icon-removeFaces",
+    name: "modify.removeFeature",
+    display: "command.removeFeature",
+    icon: "icon-removeFeature",
 })
 export class RemoveFaceCommand extends MultistepCommand {
     protected override executeMainTask() {
         Transaction.execute(this.document, `excute ${Object.getPrototypeOf(this).data.name}`, () => {
             const node = this.stepDatas[0].shapes[0].owner.geometryNode as ShapeNode;
             const faces = this.stepDatas.at(-1)!.shapes.map((x) => x.shape as IFace);
-            const filetShape = this.document.application.shapeFactory.removeFaces(node.shape.value, faces);
+            const filetShape = this.document.application.shapeFactory.removeFeature(node.shape.value, faces);
 
             const model = new EditableShapeNode(this.document, node.name, filetShape, node.materialId);
             model.transform = node.transform;

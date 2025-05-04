@@ -1,4 +1,5 @@
-// Copyright 2022-2023 the Chili authors. All rights reserved. AGPL-3.0 license.
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 
 import {
     CollectionAction,
@@ -119,7 +120,11 @@ export class ThreeVisualContext implements IVisualContext {
         const adds: INode[] = [];
         const rms: INode[] = [];
         records.forEach((x) => {
-            if (x.action === NodeAction.add) {
+            if (
+                x.action === NodeAction.add ||
+                x.action === NodeAction.insertBefore ||
+                x.action === NodeAction.insertAfter
+            ) {
                 INode.nodeOrChildrenAppendToNodes(adds, x.node);
             } else if (x.action === NodeAction.remove) {
                 INode.nodeOrChildrenAppendToNodes(rms, x.node);

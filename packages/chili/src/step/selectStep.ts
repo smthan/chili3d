@@ -1,4 +1,5 @@
-// Copyright 2022-2023 the Chili authors. All rights reserved. AGPL-3.0 license.
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 
 import {
     AsyncController,
@@ -6,6 +7,7 @@ import {
     IDocument,
     INodeFilter,
     IShapeFilter,
+    ShapeNode,
     ShapeNodeFilter,
     ShapeType,
     VisualState,
@@ -87,6 +89,31 @@ export class SelectShapeNodeStep extends SelectStep {
             shapes: [],
             nodes,
         };
+    }
+}
+
+export class GetOrSelectShapeNodeStep extends SelectShapeNodeStep {
+    override execute(document: IDocument, controller: AsyncController): Promise<SnapResult | undefined> {
+        const selected = document.selection.getSelectedNodes().filter((x) => {
+            if (!(x instanceof ShapeNode) || !x.shape.isOk) return false;
+
+            if (this.options?.filter?.allow) {
+                return this.options.filter.allow(x.shape.value);
+            }
+
+            return true;
+        });
+
+        if (selected.length > 0) {
+            controller.success();
+            return Promise.resolve({
+                view: document.application.activeView!,
+                shapes: [],
+                nodes: selected as ShapeNode[],
+            });
+        }
+
+        return super.execute(document, controller);
     }
 }
 

@@ -1,3 +1,6 @@
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
+
 import {
     arrayNeedsUint32,
     EdgeMeshData,
@@ -9,16 +12,11 @@ import {
     ShapeMeshGroup,
     VisualConfig,
 } from "chili-core";
-import {
-    Mesher as OccMesher,
-    EdgeMeshData as OccEdgeMeshData,
-    FaceMeshData as OccFaceMeshData,
-} from "../lib/chili-wasm";
+import { EdgeMeshData as OccEdgeMeshData, FaceMeshData as OccFaceMeshData } from "../lib/chili-wasm";
 import { OcctHelper } from "./helper";
 import { OccShape } from "./shape";
 
 export class Mesher implements IShapeMeshData, IDisposable {
-    private _occMesher: OccMesher;
     private _isMeshed = false;
     private _lines?: EdgeMeshData;
     private _faces?: FaceMeshData;
@@ -36,9 +34,7 @@ export class Mesher implements IShapeMeshData, IDisposable {
         return this._faces;
     }
 
-    constructor(private shape: OccShape) {
-        this._occMesher = new wasm.Mesher(shape.shape, 0.005);
-    }
+    constructor(private shape: OccShape) {}
 
     private mesh() {
         if (this._isMeshed) {
@@ -47,7 +43,8 @@ export class Mesher implements IShapeMeshData, IDisposable {
         this._isMeshed = true;
 
         gc((c) => {
-            const meshData = c(this._occMesher.mesh());
+            const occMesher = c(new wasm.Mesher(this.shape.shape, 0.005));
+            const meshData = c(occMesher.mesh());
             const faceMeshData = c(meshData.faceMeshData);
             const edgeMeshData = c(meshData.edgeMeshData);
 
@@ -84,8 +81,6 @@ export class Mesher implements IShapeMeshData, IDisposable {
         this.shape = null as any;
         this._faces = null as any;
         this._lines = null as any;
-        this._occMesher.delete();
-        this._occMesher = null as any;
     }
 
     updateMeshShape(): void {

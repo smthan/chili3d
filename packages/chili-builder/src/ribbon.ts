@@ -1,3 +1,6 @@
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
+
 import { RibbonTab } from "chili-core";
 
 export const DefaultRibbon: RibbonTab[] = [
@@ -22,19 +25,19 @@ export const DefaultRibbon: RibbonTab[] = [
                     "modify.move",
                     "modify.rotate",
                     "modify.mirror",
-                    "modify.delete",
-                    ["create.offset", "modify.break", "modify.trim"],
-                    ["modify.fillet", "modify.chamfer", "modify.removeFaces"],
+                    ["modify.split", "modify.break", "modify.trim"],
+                    ["modify.fillet", "modify.chamfer", "modify.explode"],
+                    ["modify.delete", "modify.removeSubShapes", "modify.removeFeature"],
                 ],
             },
             {
                 groupName: "ribbon.group.converter",
                 items: [
-                    "convert.toWire",
-                    "convert.toFace",
                     "convert.prism",
                     "convert.sweep",
                     "convert.revol",
+                    "convert.toWire",
+                    ["convert.toFace", "convert.toShell", "convert.toSolid"],
                 ],
             },
             {
@@ -43,11 +46,14 @@ export const DefaultRibbon: RibbonTab[] = [
             },
             {
                 groupName: "ribbon.group.workingPlane",
-                items: ["workingPlane.toggleDynamic", "workingPlane.set", "workingPlane.alignToPlane"],
+                items: [
+                    "workingPlane.toggleDynamic",
+                    ["workingPlane.set", "workingPlane.alignToPlane", "workingPlane.fromSection"],
+                ],
             },
             {
                 groupName: "ribbon.group.tools",
-                items: ["create.section", "modify.split"],
+                items: ["create.section", "create.offset", "create.copySubShape"],
             },
             {
                 groupName: "ribbon.group.importExport",
@@ -93,7 +99,7 @@ export const DefaultRibbon: RibbonTab[] = [
                     "modify.trim",
                     "modify.fillet",
                     "modify.chamfer",
-                    "modify.removeFaces",
+                    "modify.removeFeature",
                 ],
             },
             {

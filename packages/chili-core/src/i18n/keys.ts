@@ -1,4 +1,5 @@
-// Copyright 2022-2023 the Chili authors. All rights reserved. AGPL-3.0 license.
+// Part of the Chili3d Project, under the AGPL-3.0 License.
+// See LICENSE file in the project root for full license information.
 
 const I18N_KEYS = [
     "arc.angle",
@@ -54,12 +55,14 @@ const I18N_KEYS = [
     "command.chamfer",
     "command.circle",
     "command.copy",
+    "command.copySubShape",
     "command.delete",
     "command.document.new",
     "command.document.open",
     "command.document.save",
     "command.document.saveAs",
     "command.document.saveToFile",
+    "command.explode",
     "command.export",
     "command.faceable.isFace",
     "command.fillet",
@@ -77,7 +80,8 @@ const I18N_KEYS = [
     "command.prism",
     "command.rect",
     "command.redo",
-    "command.removeFaces",
+    "command.removeFeature",
+    "command.removeSubShapes",
     "command.revol",
     "command.rotate",
     "command.section",
@@ -86,6 +90,8 @@ const I18N_KEYS = [
     "command.thickSolid",
     "command.toFace",
     "command.toWire",
+    "command.toShell",
+    "command.toSolid",
     "command.trim",
     "command.undo",
     "common.angle",
@@ -205,6 +211,7 @@ const I18N_KEYS = [
     "vertex.point",
     "workingPlane.dynamic",
     "workingPlane.alignToPlane",
+    "workingPlane.fromSection",
     "workingPlane.set",
     "test.performace",
 ] as const;
