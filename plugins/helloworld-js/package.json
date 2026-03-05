@@ -1,0 +1,16 @@
+{
+    "name": "helloworld-js",
+    "version": "1.0.0",
+    "description": "A demo plugin for Chili3D showing plugin system capabilities",
+    "main": "extension.js",
+    "type": "module",
+    "scripts": {
+        "package": "node ../scripts/package-plugin.mjs dist/helloworld-js.chiliplugin src/extension.js manifest.json icons"
+    },
+    "keywords": [
+        "chili3d",
+        "plugin",
+        "demo"
+    ],
+    "author": "Chili3D Team"
+}

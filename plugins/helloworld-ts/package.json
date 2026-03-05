@@ -1,0 +1,22 @@
+{
+    "name": "helloworld-ts",
+    "version": "1.0.0",
+    "description": "A demo plugin for Chili3D showing plugin system capabilities",
+    "main": "extension.js",
+    "type": "module",
+    "scripts": {
+        "build": "rspack build",
+        "preview": "npm run build && npx servitsy -p 8888 --cors & (sleep 2 && open https://chili3d.com?plugin=http://localhost:8888/dist/extension.js)",
+        "package": "npm run build && node ../scripts/package-plugin.mjs dist/helloworld-ts.chiliplugin manifest.json dist/extension.js icons"
+    },
+    "devDependencies": {
+        "@chili3d/core": "*",
+        "typescript": "^5.0.0"
+    },
+    "keywords": [
+        "chili3d",
+        "plugin",
+        "demo"
+    ],
+    "author": "Chili3D Team"
+}
