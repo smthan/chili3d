@@ -5,7 +5,8 @@
     "documentVersion": "0.7.1",
     "author": "仙阁",
     "scripts": {
-        "build": "rspack build",
+        "build": "npm run build:plugins && rspack build",
+        "build:plugins": "node scripts/build-public-plugins.mjs",
         "build:wasm": "cd cpp && cmake --preset release && cmake --build --preset release",
         "build:types": "node scripts/generate_types.mjs",
         "check": "biome check --write",

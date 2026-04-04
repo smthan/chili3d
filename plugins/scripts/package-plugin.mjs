@@ -1,7 +1,7 @@
 // Part of the Chili3d Project, under the AGPL-3.0 License.
 // See LICENSE file in the project root for full license information.
 
-import { readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import JSZip from "jszip";
 
@@ -58,6 +58,7 @@ async function main() {
     const zip = new JSZip();
     await addFilesToZip(zip, inputPaths, basePath);
     const content = await zip.generateAsync({ type: "nodebuffer" });
+    await mkdir(path.dirname(outputPath), { recursive: true });
     await writeFile(outputPath, content);
 
     console.log(`Created ${outputPath} successfully`);

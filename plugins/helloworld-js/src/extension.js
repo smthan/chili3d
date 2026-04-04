@@ -7,7 +7,7 @@ class HelloWorldJSCommand {
         PubSub.default.pub("showToast", "demo.hello.message");
         module1_function1();
 
-        const module2 = await import("./module2.js");
+        const module2 = await import("module2");
         module2.module2_function1();
 
         return Promise.resolve();

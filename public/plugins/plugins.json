@@ -1,4 +1,6 @@
 {
     "plugins": [
+        "helloworld-js.chiliplugin",
+        "macro.chiliplugin"
     ]
 }
