@@ -20,7 +20,7 @@ import {
     type Plane,
     Precision,
     Result,
-    ShapeType,
+    ShapeTypes,
     type XYZ,
     type XYZLike,
 } from "@chili3d/core";
@@ -73,7 +73,7 @@ export class ShapeFactory implements IShapeFactory {
         if (!(curve instanceof OccCurve)) {
             throw new Error("Invalid curve");
         }
-        return new OccEdge(wasm.Edge.fromCurve(curve.curve));
+        return new OccEdge({ shape: wasm.Edge.fromCurve(curve.curve) });
     }
 
     fillet(shape: IShape, edges: number[], radius: number): Result<IShape> {
@@ -290,6 +290,14 @@ export class ShapeFactory implements IShapeFactory {
 
         return convertShapeResult(wasm.ShapeFactory.simplifyShape(fused.shape, true, true));
     }
+    sewing(shape1: IShape, shape2: IShape): Result<IShape> {
+        const [occShape1, occShape2] = ensureOccShape([shape1, shape2]);
+        const result = wasm.Shape.sewing(occShape1, occShape2);
+        if (result.isNull()) {
+            return Result.err("Sewing failed: result is null");
+        }
+        return Result.ok(OccShape.wrap(result));
+    }
     combine(shapes: IShape[]): Result<ICompound> {
         return convertShapeResult(wasm.ShapeFactory.combine(ensureOccShape(shapes))) as Result<ICompound>;
     }
@@ -315,7 +323,7 @@ export class ShapeFactory implements IShapeFactory {
     ): Result<IShape> {
         for (let i = 0; i < sections.length; i++) {
             const section = sections[i];
-            if (section.shapeType === ShapeType.Edge) {
+            if (section.shapeType === ShapeTypes.edge) {
                 sections[i] = this.wire([section as IEdge]).value;
             }
         }
@@ -335,6 +343,11 @@ export class ShapeFactory implements IShapeFactory {
                 ensureOccShape(targetFace)[0],
                 new wasm.gp_Dir(vec.x, vec.y, vec.z),
             ),
+        );
+    }
+    simplifyShape(shape: IShape, removeEdges: boolean, removeFaces: boolean): Result<IShape> {
+        return convertShapeResult(
+            wasm.ShapeFactory.simplifyShape(ensureOccShape(shape)[0], removeEdges, removeFaces),
         );
     }
 }

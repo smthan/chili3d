@@ -4,7 +4,7 @@
 import {
     AsyncController,
     command,
-    Dimension,
+    Dimensions,
     EdgeMeshDataBuilder,
     I18n,
     type IEdge,
@@ -52,7 +52,7 @@ export class Pipe extends MultistepCommand {
         if (!pathResult.isOk) return;
         const path = pathResult.value;
 
-        const node = new PipeNode(this.document, this.radius, path);
+        const node = new PipeNode({ document: this.document, radius: this.radius, path });
         // Add to document
         this.document.modelManager.addNode(node);
         this.document.selection.setSelection([node], false);
@@ -91,7 +91,7 @@ export class Pipe extends MultistepCommand {
         const lastPoint = this.stepDatas.at(-1)?.point;
         return {
             refPoint: () => lastPoint!, // refPoint expects XYZ, force it (checked in logic)
-            dimension: Dimension.D1D2D3,
+            dimension: Dimensions.D1D2D3,
             preview: this.preview,
             featurePoints: [
                 {

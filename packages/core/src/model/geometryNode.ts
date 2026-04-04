@@ -5,26 +5,38 @@ import type { IDocument } from "../document";
 import { Id, PropertyHistoryRecord, Transaction } from "../foundation";
 import { BoundingBox } from "../math";
 import { property } from "../property";
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import type { FaceMeshData, IShapeMeshData } from "../shape";
 import { MeshUtils } from "../visual/meshUtils";
 import { VisualNode } from "./visualNode";
 
-@serializable(["faceIndex", "materialIndex"])
+export interface FaceMaterialPairOptions {
+    faceIndex: number;
+    materialIndex: number;
+}
+
+@serializable()
 export class FaceMaterialPair {
-    @serialze()
+    @serialize()
     faceIndex: number;
 
-    @serialze()
+    @serialize()
     materialIndex: number;
-    constructor(faceIndex: number, materialIndex: number) {
-        this.faceIndex = faceIndex;
-        this.materialIndex = materialIndex;
+    constructor(options: FaceMaterialPairOptions) {
+        this.faceIndex = options.faceIndex;
+        this.materialIndex = options.materialIndex;
     }
 }
 
+export interface GeometryNodeOptions {
+    document: IDocument;
+    name: string;
+    materialId?: string | string[];
+    id?: string;
+}
+
 export abstract class GeometryNode extends VisualNode {
-    @serialze()
+    @serialize()
     @property("common.material", { type: "materialId" })
     get materialId(): string | string[] {
         return this.getPrivateValue("materialId");
@@ -35,7 +47,7 @@ export abstract class GeometryNode extends VisualNode {
 
     protected _originFaceMesh?: FaceMeshData;
 
-    @serialze()
+    @serialize()
     get faceMaterialPair(): FaceMaterialPair[] {
         return this.getPrivateValue("faceMaterialPair", []);
     }
@@ -45,14 +57,12 @@ export abstract class GeometryNode extends VisualNode {
         this.setProperty("faceMaterialPair", value, () => this.updateVisual(oldMaterisl, Face));
     }
 
-    constructor(
-        document: IDocument,
-        name: string,
-        materialId?: string | string[],
-        id: string = Id.generate(),
-    ) {
-        super(document, name, id);
-        this.setPrivateValue("materialId", materialId ?? document.modelManager.materials.at(0)?.id ?? "");
+    constructor(options: GeometryNodeOptions) {
+        super(options.document, options.name, options.id ?? Id.generate());
+        this.setPrivateValue(
+            "materialId",
+            options.materialId ?? options.document.modelManager.materials.at(0)?.id ?? "",
+        );
     }
 
     protected _mesh: IShapeMeshData | undefined;
@@ -106,9 +116,11 @@ export abstract class GeometryNode extends VisualNode {
             const index = this.materialId.indexOf(materialId);
             if (index === -1) {
                 (this.materialId as string[]).push(materialId);
-                this.faceMaterialPair.push(new FaceMaterialPair(faceIndex, this.materialId.length - 1));
+                this.faceMaterialPair.push(
+                    new FaceMaterialPair({ faceIndex, materialIndex: this.materialId.length - 1 }),
+                );
             } else {
-                this.faceMaterialPair.push(new FaceMaterialPair(faceIndex, index));
+                this.faceMaterialPair.push(new FaceMaterialPair({ faceIndex, materialIndex: index }));
             }
         });
         this.updateVisual(oldMaterial, oldFacePair);

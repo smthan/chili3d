@@ -11,7 +11,8 @@ import {
     LengthAtAxisStep,
     Precision,
     SelectShapeStep,
-    ShapeType,
+    type ShapeType,
+    ShapeTypes,
 } from "@chili3d/core";
 import { PrismNode } from "../../bodys";
 import { CreateCommand } from "../createCommand";
@@ -25,12 +26,15 @@ export class Prism extends CreateCommand {
         const shape = this.transformdFirstShape(this.stepDatas[0], false);
         const { point, normal } = this.getAxis(shape);
         const dist = this.stepDatas[1].point!.sub(point).dot(normal);
-        return new PrismNode(this.document, shape, dist);
+        return new PrismNode({ document: this.document, section: shape, length: dist });
     }
 
     protected override getSteps(): IStep[] {
         return [
-            new SelectShapeStep(ShapeType.Face | ShapeType.Edge | ShapeType.Wire, "prompt.select.shape"),
+            new SelectShapeStep(
+                (ShapeTypes.face | ShapeTypes.edge | ShapeTypes.wire) as ShapeType,
+                "prompt.select.shape",
+            ),
             new LengthAtAxisStep("prompt.pickNextPoint", this.getLengthStepData, true),
         ];
     }

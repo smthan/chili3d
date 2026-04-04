@@ -13,7 +13,8 @@ import {
     Line,
     property,
     SelectShapeStep,
-    ShapeType,
+    type ShapeType,
+    ShapeTypes,
 } from "@chili3d/core";
 import { RevolvedNode } from "../../bodys";
 import { CreateCommand } from "../createCommand";
@@ -35,14 +36,20 @@ export class Revolve extends CreateCommand {
         const shape = this.transformdFirstShape(this.stepDatas[0], false);
         const edge = (this.stepDatas[1].shapes[0].shape as IEdge).curve.basisCurve as ILine;
         const transform = this.stepDatas[1].shapes[0].transform;
-        const axis = new Line(transform.ofPoint(edge.value(0)), transform.ofVector(edge.direction));
-        return new RevolvedNode(this.document, shape, axis, this.angle);
+        const axis = new Line({
+            point: transform.ofPoint(edge.value(0)),
+            direction: transform.ofVector(edge.direction),
+        });
+        return new RevolvedNode({ document: this.document, profile: shape, axis, angle: this.angle });
     }
 
     protected override getSteps(): IStep[] {
         return [
-            new SelectShapeStep(ShapeType.Edge | ShapeType.Face | ShapeType.Wire, "prompt.select.shape"),
-            new SelectShapeStep(ShapeType.Edge, "prompt.select.edges", {
+            new SelectShapeStep(
+                (ShapeTypes.edge | ShapeTypes.face | ShapeTypes.wire) as ShapeType,
+                "prompt.select.shape",
+            ),
+            new SelectShapeStep(ShapeTypes.edge, "prompt.select.edges", {
                 shapeFilter: new LineFilter(),
                 keepSelection: true,
             }),
@@ -52,7 +59,7 @@ export class Revolve extends CreateCommand {
 
 class LineFilter implements IShapeFilter {
     allow(shape: IShape): boolean {
-        if (shape.shapeType === ShapeType.Edge) {
+        if (shape.shapeType === ShapeTypes.edge) {
             const edge = shape as IEdge;
             const curve = edge.curve.basisCurve;
             return CurveUtils.isLine(curve);

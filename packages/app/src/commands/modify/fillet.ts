@@ -8,9 +8,9 @@ import {
     property,
     SelectShapeStep,
     type ShapeNode,
-    ShapeType,
+    ShapeTypes,
     Transaction,
-    VisualState,
+    VisualStates,
 } from "@chili3d/core";
 import { MultistepCommand } from "../multistepCommand";
 
@@ -38,7 +38,12 @@ export class FilletCommand extends MultistepCommand {
                 this.radius,
             );
 
-            const model = new EditableShapeNode(this.document, node.name, filetShape, node.materialId);
+            const model = new EditableShapeNode({
+                document: this.document,
+                name: node.name,
+                shape: filetShape,
+                materialId: node.materialId,
+            });
             model.transform = node.transform;
             (node.parent ?? this.document.modelManager.rootNode).add(model);
             node.parent?.remove(node);
@@ -48,19 +53,19 @@ export class FilletCommand extends MultistepCommand {
 
     protected override getSteps() {
         return [
-            new SelectShapeStep(ShapeType.Shape, "prompt.select.shape", {
+            new SelectShapeStep(ShapeTypes.shape, "prompt.select.shape", {
                 shapeFilter: {
                     allow: (shape) => {
                         return (
-                            shape.shapeType === ShapeType.Solid ||
-                            shape.shapeType === ShapeType.Compound ||
-                            shape.shapeType === ShapeType.CompoundSolid
+                            shape.shapeType === ShapeTypes.solid ||
+                            shape.shapeType === ShapeTypes.compound ||
+                            shape.shapeType === ShapeTypes.compoundSolid
                         );
                     },
                 },
-                selectedState: VisualState.faceTransparent,
+                selectedState: VisualStates.faceTransparent,
             }),
-            new SelectShapeStep(ShapeType.Edge, "prompt.select.edges", {
+            new SelectShapeStep(ShapeTypes.edge, "prompt.select.edges", {
                 multiple: true,
                 keepSelection: true,
             }),

@@ -9,18 +9,25 @@ import {
     type IWire,
     ParameterShapeNode,
     type Result,
-    ShapeType,
+    ShapeTypes,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "profile", "path", "round"])
+export interface SweepOptions {
+    document: IDocument;
+    profile: (IWire | IEdge)[];
+    path: IWire | IEdge;
+    round: boolean;
+}
+
+@serializable()
 export class SweepedNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.sweep";
     }
 
-    @serialze()
+    @serialize()
     get profile() {
         return this.getPrivateValue("profile");
     }
@@ -28,7 +35,7 @@ export class SweepedNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("profile", value);
     }
 
-    @serialze()
+    @serialize()
     get path() {
         return this.getPrivateValue("path");
     }
@@ -36,7 +43,7 @@ export class SweepedNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("path", value);
     }
 
-    @serialze()
+    @serialize()
     get round() {
         return this.getPrivateValue("round");
     }
@@ -44,19 +51,19 @@ export class SweepedNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("round", value);
     }
 
-    constructor(document: IDocument, profile: (IWire | IEdge)[], path: IWire | IEdge, round: boolean) {
-        super(document);
+    constructor(options: SweepOptions) {
+        super({ document: options.document });
         this.setPrivateValue(
             "profile",
-            profile.map((p) => this.ensureWire(p)),
+            options.profile.map((p) => this.ensureWire(p)),
         );
-        this.setPrivateValue("path", this.ensureWire(path));
-        this.setPrivateValue("round", round);
+        this.setPrivateValue("path", this.ensureWire(options.path));
+        this.setPrivateValue("round", options.round);
     }
 
     private ensureWire(path: IEdge | IWire) {
         let wire = path as IWire;
-        if (path.shapeType !== ShapeType.Wire) {
+        if (path.shapeType !== ShapeTypes.wire) {
             wire = this.document.application.shapeFactory.wire([path as unknown as IEdge]).value;
         }
         return wire;

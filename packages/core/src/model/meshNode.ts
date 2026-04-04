@@ -6,17 +6,25 @@ import { Id } from "../foundation";
 import type { I18nKeys } from "../i18n";
 import { BoundingBox } from "../math";
 import { property } from "../property";
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import type { Mesh } from "../shape";
 import { VisualNode } from "./visualNode";
 
-@serializable(["document", "mesh", "name", "id"])
+export interface MeshNodeOptions {
+    document: IDocument;
+    mesh: Mesh;
+    name: string;
+    materialId?: string | string[];
+    id?: string;
+}
+
+@serializable()
 export class MeshNode extends VisualNode {
     override display(): I18nKeys {
         return "body.meshNode";
     }
 
-    @serialze()
+    @serialize()
     @property("common.material", { type: "materialId" })
     get materialId(): string | string[] {
         return this.getPrivateValue("materialId");
@@ -26,7 +34,7 @@ export class MeshNode extends VisualNode {
     }
 
     protected _mesh: Mesh;
-    @serialze()
+    @serialize()
     get mesh(): Mesh {
         return this._mesh;
     }
@@ -34,16 +42,13 @@ export class MeshNode extends VisualNode {
         this.setProperty("mesh", value);
     }
 
-    constructor(
-        document: IDocument,
-        mesh: Mesh,
-        name: string,
-        materialId?: string | string[],
-        id: string = Id.generate(),
-    ) {
-        super(document, name, id);
-        this._mesh = mesh;
-        this.setPrivateValue("materialId", materialId ?? document.modelManager.materials.at(0)?.id ?? "");
+    constructor(options: MeshNodeOptions) {
+        super(options.document, options.name, options.id ?? Id.generate());
+        this._mesh = options.mesh;
+        this.setPrivateValue(
+            "materialId",
+            options.materialId ?? options.document.modelManager.materials.at(0)?.id ?? "",
+        );
     }
 
     override boundingBox(): BoundingBox | undefined {

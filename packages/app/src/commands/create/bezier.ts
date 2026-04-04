@@ -4,7 +4,7 @@
 import {
     AsyncController,
     command,
-    Dimension,
+    Dimensions,
     EditableShapeNode,
     type GeometryNode,
     I18n,
@@ -27,7 +27,11 @@ import { CreateCommand } from "../createCommand";
 export class BezierCommand extends CreateCommand {
     protected override geometryNode(): GeometryNode {
         const bezier = this.application.shapeFactory.bezier(this.stepDatas.map((x) => x.point!));
-        return new EditableShapeNode(this.document, I18n.translate("command.create.bezier"), bezier.value);
+        return new EditableShapeNode({
+            document: this.document,
+            name: I18n.translate("command.create.bezier"),
+            shape: bezier.value,
+        });
     }
 
     protected override async executeSteps() {
@@ -65,7 +69,7 @@ export class BezierCommand extends CreateCommand {
     private readonly getNextData = (): PointSnapData => {
         return {
             refPoint: () => this.stepDatas.at(-1)!.point!,
-            dimension: Dimension.D1D2D3,
+            dimension: Dimensions.D1D2D3,
             validator: this.validator,
             preview: this.preview,
             featurePoints: [

@@ -8,16 +8,22 @@ import {
     ParameterShapeNode,
     type Result,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "bottom", "top"])
+export interface FuseOptions {
+    document: IDocument;
+    bottom: IShape;
+    top: IShape;
+}
+
+@serializable()
 export class FuseNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.fuse";
     }
 
-    @serialze()
+    @serialize()
     get bottom(): IShape {
         return this.getPrivateValue("bottom");
     }
@@ -25,7 +31,7 @@ export class FuseNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("bottom", value);
     }
 
-    @serialze()
+    @serialize()
     get top(): IShape {
         return this.getPrivateValue("top");
     }
@@ -33,10 +39,10 @@ export class FuseNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("top", value);
     }
 
-    constructor(document: IDocument, bottom: IShape, top: IShape) {
-        super(document);
-        this.setPrivateValue("bottom", bottom);
-        this.setPrivateValue("top", top);
+    constructor(options: FuseOptions) {
+        super(options);
+        this.setPrivateValue("bottom", options.bottom);
+        this.setPrivateValue("top", options.top);
     }
 
     override generateShape(): Result<IShape> {

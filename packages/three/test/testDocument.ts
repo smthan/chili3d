@@ -6,8 +6,8 @@ import {
     History,
     type IApplication,
     type IDocument,
+    InternalClassName,
     type ISelection,
-    type ISerialize,
     type IView,
     ModelManager,
     ObservableCollection,
@@ -16,7 +16,7 @@ import {
 } from "@chili3d/core";
 import { ThreeVisual } from "../src/threeVisual";
 
-export class TestDocument implements IDocument, ISerialize {
+export class TestDocument implements IDocument {
     application: IApplication;
     name: string;
     id: string;
@@ -26,6 +26,7 @@ export class TestDocument implements IDocument, ISerialize {
     activeView: IView | undefined;
     modelManager: ModelManager = new ModelManager(this);
     acts: ObservableCollection<Act> = new ObservableCollection<Act>();
+    userData?: Record<string, unknown> | undefined;
     onPropertyChanged<K extends keyof this>(handler: PropertyChangedHandler<this, K>): void {
         throw new Error("Method not implemented.");
     }
@@ -46,7 +47,7 @@ export class TestDocument implements IDocument, ISerialize {
 
     serialize(): Serialized {
         return {
-            classKey: "TestDocument",
+            [InternalClassName]: "TestDocument",
             properties: {},
         };
     }

@@ -7,9 +7,9 @@ import {
     type IFace,
     SelectShapeStep,
     type ShapeNode,
-    ShapeType,
+    ShapeTypes,
     Transaction,
-    VisualState,
+    VisualStates,
 } from "@chili3d/core";
 import { MultistepCommand } from "../multistepCommand";
 
@@ -24,7 +24,12 @@ export class RemoveFaceCommand extends MultistepCommand {
             const faces = this.stepDatas.at(-1)!.shapes.map((x) => x.shape as IFace);
             const filetShape = this.document.application.shapeFactory.removeFeature(node.shape.value, faces);
 
-            const model = new EditableShapeNode(this.document, node.name, filetShape, node.materialId);
+            const model = new EditableShapeNode({
+                document: this.document,
+                name: node.name,
+                shape: filetShape,
+                materialId: node.materialId,
+            });
             model.transform = node.transform;
 
             this.document.modelManager.addNode(model);
@@ -35,19 +40,19 @@ export class RemoveFaceCommand extends MultistepCommand {
 
     protected override getSteps() {
         return [
-            new SelectShapeStep(ShapeType.Shape, "prompt.select.shape", {
+            new SelectShapeStep(ShapeTypes.shape, "prompt.select.shape", {
                 shapeFilter: {
                     allow: (shape) => {
                         return (
-                            shape.shapeType === ShapeType.Solid ||
-                            shape.shapeType === ShapeType.Compound ||
-                            shape.shapeType === ShapeType.CompoundSolid
+                            shape.shapeType === ShapeTypes.solid ||
+                            shape.shapeType === ShapeTypes.compound ||
+                            shape.shapeType === ShapeTypes.compoundSolid
                         );
                     },
                 },
-                selectedState: VisualState.faceTransparent,
+                selectedState: VisualStates.faceTransparent,
             }),
-            new SelectShapeStep(ShapeType.Face, "prompt.select.faces", {
+            new SelectShapeStep(ShapeTypes.face, "prompt.select.faces", {
                 multiple: true,
                 keepSelection: true,
             }),

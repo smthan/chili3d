@@ -1,8 +1,14 @@
-const { CommandStore, PubSub } = ChiliCore;
+import { module1_function1 } from "module1";
+
+const { CommandStore, PubSub } = Chili3dCore;
 
 class HelloWorldJSCommand {
-    execute(app) {
+    async execute(app) {
         PubSub.default.pub("showToast", "demo.hello.message");
+        module1_function1();
+
+        const module2 = await import("./module2.js");
+        module2.module2_function1();
 
         return Promise.resolve();
     }

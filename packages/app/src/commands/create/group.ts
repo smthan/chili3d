@@ -7,7 +7,6 @@ import {
     Component,
     ComponentNode,
     command,
-    DialogResult,
     GetOrSelectNodeStep,
     type IApplication,
     type ICommand,
@@ -21,7 +20,7 @@ import {
     VisualNode,
     XYZ,
 } from "@chili3d/core";
-import { button, div, input, label, XYZConverter } from "@chili3d/elements";
+import { button, div, input, label, XYZConverter } from "@chili3d/element";
 import { MultistepCommand } from "../multistepCommand";
 
 class GroupDefinition extends Observable {
@@ -65,8 +64,8 @@ export class GroupCommand extends MultistepCommand {
 
         const definition = new GroupDefinition();
 
-        PubSub.default.pub("showDialog", "command.create.group", this.dialog(definition), (r) => {
-            if (r === DialogResult.ok) this.createGroup(definition, nodes);
+        PubSub.default.pub("showDialog", "command.create.group", this.dialog(definition), () => {
+            this.createGroup(definition, nodes);
         });
     }
 
@@ -78,16 +77,20 @@ export class GroupCommand extends MultistepCommand {
                 node.transform = worldTransform;
             }
 
-            const component = new Component(definition.name, this.stepDatas[0].nodes!, definition.insert);
+            const component = new Component({
+                name: definition.name,
+                nodes: this.stepDatas[0].nodes!,
+                origin: definition.insert,
+            });
             this.document.modelManager.components.push(component);
 
             if (definition.convertInstance) {
-                const group = new ComponentNode(
-                    this.document,
-                    definition.name,
-                    component.id,
-                    component.origin,
-                );
+                const group = new ComponentNode({
+                    document: this.document,
+                    name: definition.name,
+                    componentId: component.id,
+                    insert: component.origin,
+                });
                 this.document.modelManager.rootNode.add(group);
             }
         });

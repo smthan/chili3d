@@ -4,8 +4,7 @@
 import {
     AsyncController,
     command,
-    DialogResult,
-    Dimension,
+    Dimensions,
     I18n,
     type IApplication,
     type ICommand,
@@ -20,17 +19,16 @@ import {
     PubSub,
     property,
     SelectableItems,
-    SelectMode,
     SelectShapeStep,
-    ShapeType,
+    ShapeTypes,
     XYZ,
 } from "@chili3d/core";
-import { div, RadioGroup } from "@chili3d/elements";
+import { div, RadioGroup } from "@chili3d/element";
 import { MultistepCommand } from "./multistepCommand";
 
 export class WorkingPlaneViewModel extends Observable {
     @property("dialog.title.selectWorkingPlane")
-    planes: SelectableItems<string> = new SelectableItems(["XOY", "YOZ", "ZOX"], SelectMode.radio, ["XOY"]);
+    planes: SelectableItems<string> = new SelectableItems(["XOY", "YOZ", "ZOX"], "radio", ["XOY"]);
 }
 
 @command({
@@ -43,11 +41,9 @@ export class SetWorkplane implements ICommand {
         if (!view) return;
 
         const vm = new WorkingPlaneViewModel();
-        PubSub.default.pub("showDialog", "dialog.title.selectWorkingPlane", this.ui(vm), (result) => {
-            if (result === DialogResult.ok) {
-                const planes = [Plane.XY, Plane.YZ, Plane.ZX];
-                view.workplane = planes[vm.planes.selectedIndexes[0]];
-            }
+        PubSub.default.pub("showDialog", "dialog.title.selectWorkingPlane", this.ui(vm), () => {
+            const planes = [Plane.XY, Plane.YZ, Plane.ZX];
+            view.workplane = planes[vm.planes.selectedIndexes[0]];
         });
     }
 
@@ -74,7 +70,7 @@ export class AlignToPlane implements ICommand {
         if (!view) return;
         view.document.selection.clearSelection();
         const controller = new AsyncController();
-        const data = await new SelectShapeStep(ShapeType.Face, "prompt.select.faces").execute(
+        const data = await new SelectShapeStep(ShapeTypes.face, "prompt.select.faces").execute(
             view.document,
             controller,
         );
@@ -88,7 +84,7 @@ export class AlignToPlane implements ICommand {
         if (!normal.isParallelTo(XYZ.unitZ)) {
             xvec = XYZ.unitZ.cross(normal).normalize()!;
         }
-        view.workplane = new Plane(point, normal, xvec);
+        view.workplane = new Plane({ origin: point, normal, xvec });
     }
 }
 
@@ -105,7 +101,7 @@ export class FromSection extends MultistepCommand {
         if (parameter === undefined) return;
         const direction = curve.d1(parameter).vec.normalize()!;
         const xvec: XYZ = this.findXVec(direction);
-        const plane = new Plane(point, direction, xvec);
+        const plane = new Plane({ origin: point, normal: direction, xvec });
         const view = this.application.activeView;
         if (!view) return;
         view.workplane = plane;
@@ -115,7 +111,7 @@ export class FromSection extends MultistepCommand {
         let xvec: XYZ;
         if (direction.isEqualTo(XYZ.unitZ)) {
             xvec = XYZ.unitX;
-        } else if (direction.isEqualTo(new XYZ(0, 0, -1))) {
+        } else if (direction.isEqualTo(new XYZ({ x: 0, y: 0, z: -1 }))) {
             xvec = XYZ.unitY;
         } else {
             xvec = direction.cross(XYZ.unitZ).normalize()!;
@@ -125,7 +121,7 @@ export class FromSection extends MultistepCommand {
 
     protected override getSteps(): IStep[] {
         return [
-            new SelectShapeStep(ShapeType.Edge, "prompt.select.edges"),
+            new SelectShapeStep(ShapeTypes.edge, "prompt.select.edges"),
             new PointOnCurveStep("prompt.pickFistPoint", this.handlePointData, true),
         ];
     }
@@ -142,7 +138,7 @@ export class FromSection extends MultistepCommand {
         const curve = this.transformedCurve();
         return {
             curve,
-            dimension: Dimension.D1,
+            dimension: Dimensions.D1,
             preview: (point: XYZ | undefined) => {
                 if (!point) return [];
                 const project = curve.project(point).at(0);

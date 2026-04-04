@@ -3,7 +3,6 @@
 
 import {
     Binding,
-    ButtonSize,
     type CommandKeys,
     CommandStore,
     Config,
@@ -22,7 +21,7 @@ import {
     type RibbonGroup,
     type RibbonTab,
 } from "@chili3d/core";
-import { a, collection, createIcon, div, label, span, svg } from "@chili3d/elements";
+import { a, collection, createIcon, div, label, span, svg } from "@chili3d/element";
 import { CommandContext } from "./commandContext";
 import style from "./ribbon.module.css";
 import { RibbonButton } from "./ribbonButton";
@@ -163,7 +162,7 @@ export class RibbonUI extends HTMLElement {
                     new ViewActiveConverter(view, style.tab, style.active),
                 ),
                 onclick: () => {
-                    this.dataContent.activeView = view;
+                    this.app.activeView = view;
                 },
             },
             div({ className: style.name }, span({ textContent: new Binding(view.document, "name") })),
@@ -221,16 +220,16 @@ export class RibbonUI extends HTMLElement {
 
     private ribbonButton(item: RibbonCommand) {
         if (typeof item === "string") {
-            return RibbonButton.fromCommandName(item, ButtonSize.large)!;
+            return RibbonButton.fromCommandName(item, "large")!;
         } else if (item instanceof ObservableCollection) {
             const stack = new RibbonStack();
             item.forEach((b) => {
-                const button = RibbonButton.fromCommandName(b, ButtonSize.small);
+                const button = RibbonButton.fromCommandName(b, "small");
                 if (button) stack.append(button);
             });
             return stack;
         } else {
-            return new RibbonButton(item.command, item.icon, ButtonSize.large, item.onClick, item.display);
+            return new RibbonButton(item.command, item.icon, "large", item.onClick, item.display);
         }
     }
 

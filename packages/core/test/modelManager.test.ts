@@ -1,7 +1,7 @@
 // Part of the Chili3d Project, under the AGPL-3.0 License.
 // See LICENSE file in the project root for full license information.
 
-import { FolderNode, Id, type INode, type ModelManager, type OnNodeChanged } from "../src";
+import { FolderNode, Id, type INode, InternalClassName, type ModelManager, type OnNodeChanged } from "../src";
 import { TestDocument } from "./testDocument";
 
 function newNode(name: string, id?: string): INode {
@@ -69,13 +69,13 @@ describe("ModelManager", () => {
         });
 
         test("should set new rootNode", () => {
-            const newRoot = new FolderNode(doc, "newRoot");
+            const newRoot = new FolderNode({ document: doc, name: "newRoot" });
             modelManager.rootNode = newRoot;
             expect(modelManager.rootNode).toBe(newRoot);
         });
 
         test("should update document name when rootNode name changes", () => {
-            const newRoot = new FolderNode(doc, "newRoot");
+            const newRoot = new FolderNode({ document: doc, name: "newRoot" });
             modelManager.rootNode = newRoot;
             newRoot.name = "updatedName";
             expect(doc.name).toBe("updatedName");
@@ -102,13 +102,13 @@ describe("ModelManager", () => {
         });
 
         test("should set currentNode", () => {
-            const node = new FolderNode(doc, "current");
+            const node = new FolderNode({ document: doc, name: "current" });
             modelManager.currentNode = node;
             expect(modelManager.currentNode).toBe(node);
         });
 
         test("should set currentNode to undefined", () => {
-            const node = new FolderNode(doc, "current");
+            const node = new FolderNode({ document: doc, name: "current" });
             modelManager.currentNode = node;
             modelManager.currentNode = undefined;
             expect(modelManager.currentNode).toBeUndefined();
@@ -163,7 +163,7 @@ describe("ModelManager", () => {
 
     describe("addNode", () => {
         test("should add node to currentNode if set", () => {
-            const currentNode = new FolderNode(doc, "current");
+            const currentNode = new FolderNode({ document: doc, name: "current" });
             modelManager.currentNode = currentNode;
 
             const childNode = newNode("child");
@@ -200,7 +200,7 @@ describe("ModelManager", () => {
         });
 
         test("should find node by predicate", () => {
-            const parent = new FolderNode(doc, "parent");
+            const parent = new FolderNode({ document: doc, name: "parent" });
             const targetNode = newNode("target");
             parent.add(targetNode);
             modelManager.rootNode = parent;
@@ -210,7 +210,7 @@ describe("ModelManager", () => {
         });
 
         test("should return undefined when node not found", () => {
-            const parent = new FolderNode(doc, "parent");
+            const parent = new FolderNode({ document: doc, name: "parent" });
             modelManager.rootNode = parent;
 
             const found = modelManager.findNode((node) => node.name === "nonexistent");
@@ -218,8 +218,8 @@ describe("ModelManager", () => {
         });
 
         test("should search in nested children", () => {
-            const parent = new FolderNode(doc, "parent");
-            const child = new FolderNode(doc, "child");
+            const parent = new FolderNode({ document: doc, name: "parent" });
+            const child = new FolderNode({ document: doc, name: "child" });
             const targetNode = newNode("target");
             child.add(targetNode);
             parent.add(child);
@@ -238,7 +238,7 @@ describe("ModelManager", () => {
         });
 
         test("should return all nodes when no predicate", () => {
-            const parent = new FolderNode(doc, "parent");
+            const parent = new FolderNode({ document: doc, name: "parent" });
             const child1 = newNode("child1");
             const child2 = newNode("child2");
             parent.add(child1, child2);
@@ -249,7 +249,7 @@ describe("ModelManager", () => {
         });
 
         test("should filter nodes by predicate", () => {
-            const parent = new FolderNode(doc, "parent");
+            const parent = new FolderNode({ document: doc, name: "parent" });
             const special1 = newNode("special1");
             const special2 = newNode("special2");
             const normal = newNode("normal");
@@ -263,8 +263,8 @@ describe("ModelManager", () => {
         });
 
         test("should search in nested children", () => {
-            const parent = new FolderNode(doc, "parent");
-            const child = new FolderNode(doc, "child");
+            const parent = new FolderNode({ document: doc, name: "parent" });
+            const child = new FolderNode({ document: doc, name: "child" });
             const nestedNode = newNode("nested");
             child.add(nestedNode);
             parent.add(child);
@@ -277,7 +277,7 @@ describe("ModelManager", () => {
 
     describe("serialize", () => {
         test("should serialize components, nodes, and materials", () => {
-            const childNode = new FolderNode(doc, "child");
+            const childNode = new FolderNode({ document: doc, name: "child" });
             modelManager.addNode(childNode);
 
             const serialized = modelManager.serialize();
@@ -297,7 +297,9 @@ describe("ModelManager", () => {
         test("should deserialize components, materials, and nodes", async () => {
             const data = {
                 components: [],
-                nodes: [{ classKey: "FolderNode", properties: { name: "root", id: Id.generate() } }],
+                nodes: [
+                    { [InternalClassName]: "FolderNode", properties: { name: "root", id: Id.generate() } },
+                ],
                 materials: [],
             };
 
@@ -330,7 +332,7 @@ describe("ModelManager", () => {
         });
 
         test("should set currentNode to undefined", () => {
-            modelManager.currentNode = new FolderNode(doc, "current");
+            modelManager.currentNode = new FolderNode({ document: doc, name: "current" });
             modelManager.dispose();
             expect(modelManager.currentNode).toBeUndefined();
         });

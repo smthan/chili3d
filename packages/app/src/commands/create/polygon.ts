@@ -4,7 +4,7 @@
 import {
     AsyncController,
     command,
-    Dimension,
+    Dimensions,
     EdgeMeshDataBuilder,
     type GeometryNode,
     I18n,
@@ -31,10 +31,10 @@ export class Polygon extends CreateFaceableCommand {
     };
 
     protected override geometryNode(): GeometryNode {
-        const node = new PolygonNode(
-            this.document,
-            this.stepDatas.map((step) => step.point!),
-        );
+        const node = new PolygonNode({
+            document: this.document,
+            points: this.stepDatas.map((step) => step.point!),
+        });
         node.isFace = this.isFace;
         return node;
     }
@@ -73,7 +73,7 @@ export class Polygon extends CreateFaceableCommand {
     private readonly getNextData = (): PointSnapData => {
         return {
             refPoint: () => this.stepDatas.at(-1)!.point!,
-            dimension: Dimension.D1D2D3,
+            dimension: Dimensions.D1D2D3,
             validator: this.validator,
             preview: this.preview,
             featurePoints: [

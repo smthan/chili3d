@@ -6,7 +6,7 @@ import { Id } from "../foundation";
 import type { I18nKeys } from "../i18n";
 import { BoundingBox, Matrix4, type XYZ } from "../math";
 import { property } from "../property";
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import { type EdgeMeshData, type FaceMeshData, Mesh } from "../shape";
 import { MeshUtils } from "../visual/meshUtils";
 import { MeshNode } from "./meshNode";
@@ -68,25 +68,32 @@ export function createComponentSize(): ComponentSize {
     };
 }
 
-@serializable(["name", "nodes", "origin", "id"])
+export interface ComponentOptions {
+    name: string;
+    nodes: ReadonlyArray<VisualNode>;
+    origin?: XYZ;
+    id?: string;
+}
+
+@serializable()
 export class Component {
     private readonly _nodes: ReadonlyArray<VisualNode>;
-    @serialze()
+    @serialize()
     get nodes(): ReadonlyArray<VisualNode> {
         return this._nodes;
     }
 
     private readonly _name: string;
-    @serialze()
+    @serialize()
     get name(): string {
         return this._name;
     }
 
-    @serialze()
+    @serialize({ readonly: true })
     readonly id: string;
 
     private _origin: XYZ;
-    @serialze()
+    @serialize()
     get origin(): XYZ {
         return this._origin;
     }
@@ -108,11 +115,11 @@ export class Component {
 
     public instances: ComponentNode[] = [];
 
-    constructor(name: string, nodes: ReadonlyArray<VisualNode>, origin?: XYZ, id = Id.generate()) {
-        this._name = name;
-        this._nodes = nodes;
-        this.id = id;
-        this._origin = origin ?? BoundingBox.center(this.boundingBox);
+    constructor(options: ComponentOptions) {
+        this._name = options.name;
+        this._nodes = options.nodes;
+        this.id = options.id ?? Id.generate();
+        this._origin = options.origin ?? BoundingBox.center(this.boundingBox);
     }
 
     toString(): string {
@@ -258,7 +265,15 @@ export class Component {
     }
 }
 
-@serializable(["document", "name", "componentId", "insert", "id"])
+export interface ComponentNodeOptions {
+    document: IDocument;
+    name: string;
+    componentId: string;
+    insert: XYZ;
+    id?: string;
+}
+
+@serializable()
 export class ComponentNode extends VisualNode {
     override display(): I18nKeys {
         return "body.group";
@@ -285,21 +300,15 @@ export class ComponentNode extends VisualNode {
         return this._component;
     }
 
-    @serialze()
+    @serialize({ readonly: true })
     readonly componentId: string;
 
-    @serialze()
+    @serialize({ readonly: true })
     readonly insert: XYZ;
 
-    constructor(
-        document: IDocument,
-        name: string,
-        componentId: string,
-        insert: XYZ,
-        id: string = Id.generate(),
-    ) {
-        super(document, name, id);
-        this.componentId = componentId;
-        this.insert = insert;
+    constructor(options: ComponentNodeOptions) {
+        super(options.document, options.name, options.id ?? Id.generate());
+        this.componentId = options.componentId;
+        this.insert = options.insert;
     }
 }

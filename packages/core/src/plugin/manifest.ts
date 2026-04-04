@@ -47,4 +47,10 @@ export type PluginManifest = {
 
     /** Dependencies on other plugins (plugin ID -> version range) */
     dependencies?: Record<string, string>;
+
+    /** CSS file path(s) to load (relative path) */
+    css?: string | string[];
+
+    /** Import map for module resolution, see https://developer.mozilla.org/zh-CN/docs/Web/HTML/Reference/Elements/script/type/importmap */
+    importmap?: string;
 };

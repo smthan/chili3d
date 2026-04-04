@@ -6,9 +6,10 @@ import {
     EditableShapeNode,
     SelectShapeStep,
     type ShapeNode,
-    ShapeType,
+    type ShapeType,
+    ShapeTypes,
     Transaction,
-    VisualState,
+    VisualStates,
 } from "@chili3d/core";
 import { MultistepCommand } from "../multistepCommand";
 
@@ -23,7 +24,12 @@ export class RemoveSubShapesCommand extends MultistepCommand {
             const subShapes = this.stepDatas.at(-1)!.shapes.map((x) => x.shape);
             const shape = this.document.application.shapeFactory.removeSubShape(node.shape.value, subShapes);
 
-            const model = new EditableShapeNode(this.document, node.name, shape, node.materialId);
+            const model = new EditableShapeNode({
+                document: this.document,
+                name: node.name,
+                shape,
+                materialId: node.materialId,
+            });
             model.transform = node.transform;
 
             node.parent?.insertAfter(node.previousSibling, model);
@@ -34,15 +40,15 @@ export class RemoveSubShapesCommand extends MultistepCommand {
 
     protected override getSteps() {
         return [
-            new SelectShapeStep(ShapeType.Shape, "prompt.select.shape", {
+            new SelectShapeStep(ShapeTypes.shape, "prompt.select.shape", {
                 shapeFilter: {
                     allow: (shape) => {
-                        return shape.shapeType !== ShapeType.Vertex && shape.shapeType !== ShapeType.Edge;
+                        return shape.shapeType !== ShapeTypes.vertex && shape.shapeType !== ShapeTypes.edge;
                     },
                 },
-                selectedState: VisualState.faceTransparent,
+                selectedState: VisualStates.faceTransparent,
             }),
-            new SelectShapeStep(ShapeType.Edge | ShapeType.Face, "prompt.select.shape", {
+            new SelectShapeStep((ShapeTypes.edge | ShapeTypes.face) as ShapeType, "prompt.select.shape", {
                 multiple: true,
                 keepSelection: true,
             }),

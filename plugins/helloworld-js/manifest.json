@@ -8,5 +8,6 @@
     },
     "engines": {
         "chili3d": ">=0.6"
-    }
+    },
+    "importmap": "importmap.json"
 }

@@ -3,7 +3,6 @@
 
 import type { IDocument } from "./document";
 import {
-    CollectionAction,
     type CollectionChangedArgs,
     NodeLinkedListHistoryRecord,
     type NodeRecord,
@@ -36,7 +35,7 @@ export class ModelManager extends Observable {
         if (this._rootNode === value) return;
 
         this._rootNode?.removePropertyChanged(this.handleRootNodeNameChanged);
-        this._rootNode = value ?? new FolderNode(this.document, this.document.name);
+        this._rootNode = value ?? new FolderNode({ document: this.document, name: this.document.name });
         this._rootNode.onPropertyChanged(this.handleRootNodeNameChanged);
     }
 
@@ -60,7 +59,7 @@ export class ModelManager extends Observable {
     };
 
     initRootNode() {
-        return new FolderNode(this.document, this.document.name);
+        return new FolderNode({ document: this.document, name: this.document.name });
     }
 
     addNodeObserver(observer: OnNodeChanged) {
@@ -128,14 +127,14 @@ export class ModelManager extends Observable {
     }
 
     private readonly handleMaterialChanged = (args: CollectionChangedArgs) => {
-        if (args.action === CollectionAction.add) {
+        if (args.action === "add") {
             Transaction.add(this.document, {
                 name: "MaterialChanged",
                 dispose() {},
                 undo: () => this.materials.remove(...args.items),
                 redo: () => this.materials.push(...args.items),
             });
-        } else if (args.action === CollectionAction.remove) {
+        } else if (args.action === "remove") {
             Transaction.add(this.document, {
                 name: "MaterialChanged",
                 dispose() {},

@@ -10,16 +10,24 @@ import {
     property,
     type Result,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "plane", "dx", "dy", "dz"])
+export interface PyramidNodeOptions {
+    document: IDocument;
+    plane: Plane;
+    dx: number;
+    dy: number;
+    dz: number;
+}
+
+@serializable()
 export class PyramidNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.pyramid";
     }
 
-    @serialze()
+    @serialize()
     @property("box.dx")
     get dx() {
         return this.getPrivateValue("dx");
@@ -28,7 +36,7 @@ export class PyramidNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dx", dx);
     }
 
-    @serialze()
+    @serialize()
     @property("box.dy")
     get dy() {
         return this.getPrivateValue("dy");
@@ -37,7 +45,7 @@ export class PyramidNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dy", dy);
     }
 
-    @serialze()
+    @serialize()
     @property("box.dz")
     get dz() {
         return this.getPrivateValue("dz");
@@ -46,17 +54,17 @@ export class PyramidNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dz", dz);
     }
 
-    @serialze()
+    @serialize()
     get plane(): Plane {
         return this.getPrivateValue("plane");
     }
 
-    constructor(document: IDocument, plane: Plane, dx: number, dy: number, dz: number) {
-        super(document);
-        this.setPrivateValue("plane", plane);
-        this.setPrivateValue("dx", dx);
-        this.setPrivateValue("dy", dy);
-        this.setPrivateValue("dz", dz);
+    constructor(options: PyramidNodeOptions) {
+        super(options);
+        this.setPrivateValue("plane", options.plane);
+        this.setPrivateValue("dx", options.dx);
+        this.setPrivateValue("dy", options.dy);
+        this.setPrivateValue("dz", options.dz);
     }
 
     generateShape(): Result<IShape> {

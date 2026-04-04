@@ -6,8 +6,8 @@ import {
     History,
     type IApplication,
     type IDocument,
+    InternalClassName,
     type ISelection,
-    type ISerialize,
     type IView,
     type IVisual,
     type Material,
@@ -17,7 +17,7 @@ import {
     type Serialized,
 } from "@chili3d/core";
 
-export class TestDocument implements IDocument, ISerialize {
+export class TestDocument implements IDocument {
     application: IApplication;
     name: string;
     id: string;
@@ -25,6 +25,7 @@ export class TestDocument implements IDocument, ISerialize {
     selection: ISelection;
     visual: IVisual;
     activeView: IView | undefined;
+    userData?: Record<string, unknown> | undefined;
     modelManager: ModelManager = new ModelManager(this);
     materials: ObservableCollection<Material> = new ObservableCollection<Material>();
     acts: ObservableCollection<Act> = new ObservableCollection<Act>();
@@ -48,7 +49,7 @@ export class TestDocument implements IDocument, ISerialize {
 
     serialize(): Serialized {
         return {
-            classKey: "TestDocument",
+            [InternalClassName]: "TestDocument",
             properties: {},
         };
     }

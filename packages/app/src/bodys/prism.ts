@@ -10,16 +10,22 @@ import {
     property,
     type Result,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "section", "length"])
+export interface PrismOptions {
+    document: IDocument;
+    section: IShape;
+    length: number;
+}
+
+@serializable()
 export class PrismNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.prism";
     }
 
-    @serialze()
+    @serialize()
     get section(): IShape {
         return this.getPrivateValue("section");
     }
@@ -27,7 +33,7 @@ export class PrismNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("section", value);
     }
 
-    @serialze()
+    @serialize()
     @property("common.length")
     get length(): number {
         return this.getPrivateValue("length");
@@ -36,10 +42,10 @@ export class PrismNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("length", value);
     }
 
-    constructor(document: IDocument, face: IShape, length: number) {
-        super(document);
-        this.setPrivateValue("section", face);
-        this.setPrivateValue("length", length);
+    constructor(options: PrismOptions) {
+        super({ document: options.document });
+        this.setPrivateValue("section", options.section);
+        this.setPrivateValue("length", options.length);
     }
 
     override generateShape(): Result<IShape> {

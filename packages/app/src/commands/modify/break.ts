@@ -3,7 +3,7 @@
 
 import {
     command,
-    Dimension,
+    Dimensions,
     EditableShapeNode,
     type IEdge,
     type IStep,
@@ -11,7 +11,7 @@ import {
     PointOnCurveStep,
     SelectShapeStep,
     type ShapeNode,
-    ShapeType,
+    ShapeTypes,
     Transaction,
     type XYZ,
 } from "@chili3d/core";
@@ -40,8 +40,16 @@ export class Break extends MultistepCommand {
             const edge2 = this.document.application.shapeFactory.edge(curve2);
 
             const model = this.stepDatas[0].nodes![0] as ShapeNode;
-            const model1 = new EditableShapeNode(this.document, `${model.name}_1`, shape);
-            const model2 = new EditableShapeNode(this.document, `${model.name}_2`, edge2);
+            const model1 = new EditableShapeNode({
+                document: this.document,
+                name: `${model.name}_1`,
+                shape,
+            });
+            const model2 = new EditableShapeNode({
+                document: this.document,
+                name: `${model.name}_2`,
+                shape: edge2,
+            });
             model1.transform = model.transform;
             model2.transform = model.transform;
             model.parent?.insertAfter(model, model1);
@@ -54,8 +62,8 @@ export class Break extends MultistepCommand {
 
     protected override getSteps(): IStep[] {
         return [
-            new SelectShapeStep(ShapeType.Shape, "prompt.select.edges", {
-                shapeFilter: { allow: (s) => s.shapeType === ShapeType.Edge },
+            new SelectShapeStep(ShapeTypes.shape, "prompt.select.edges", {
+                shapeFilter: { allow: (s) => s.shapeType === ShapeTypes.edge },
             }),
             new PointOnCurveStep("prompt.pickFistPoint", this.handlePointData, true),
         ];
@@ -70,7 +78,7 @@ export class Break extends MultistepCommand {
 
         return {
             curve,
-            dimension: Dimension.D1,
+            dimension: Dimensions.D1,
             preview: (point: XYZ | undefined) => {
                 if (!point) return [];
                 const project = curve.project(point).at(0);

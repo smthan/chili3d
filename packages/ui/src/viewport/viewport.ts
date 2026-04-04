@@ -5,7 +5,6 @@ import {
     type Act,
     Binding,
     type CameraType,
-    DialogResult,
     I18n,
     type IConverter,
     type IView,
@@ -16,7 +15,7 @@ import {
     ViewModeI18nKeys,
     ViewModes,
 } from "@chili3d/core";
-import { collection, div, input, label, span, svg } from "@chili3d/elements";
+import { collection, div, input, label, span, svg } from "@chili3d/element";
 import { Flyout } from "./flyout";
 import style from "./viewport.module.css";
 
@@ -189,10 +188,8 @@ export class Viewport extends HTMLElement {
             "showDialog",
             "ribbon.group.act",
             div(label({ textContent: new Localize("common.name") }), ": ", inputBox),
-            (result) => {
-                if (result === DialogResult.ok) {
-                    act.name = inputBox.value;
-                }
+            () => {
+                act.name = inputBox.value;
             },
         );
     };

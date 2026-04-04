@@ -6,7 +6,7 @@ import type { IDocument } from "../../document";
 import { Precision } from "../../foundation";
 import { I18n } from "../../i18n";
 import { type Line, XY, type XYZ } from "../../math";
-import { type ISubEdgeShape, MeshDataUtils, ShapeType } from "../../shape";
+import { type ISubEdgeShape, MeshDataUtils, ShapeTypes } from "../../shape";
 import { type IView, screenDistance } from "../../visual";
 import type { ISnap, MouseAndDetected, SnapResult } from "../";
 import type { Axis } from "./axis";
@@ -97,7 +97,7 @@ export class TrackingSnap implements ISnap {
         data: MouseAndDetected,
         trackingDatas: TrackingData[],
     ): SnapResult | undefined {
-        if (data.shapes.length === 0 || data.shapes[0].shape.shapeType !== ShapeType.Edge) return undefined;
+        if (data.shapes.length === 0 || data.shapes[0].shape.shapeType !== ShapeTypes.edge) return undefined;
         const point = this.findIntersection(data, trackingDatas);
         if (!point) return undefined;
         const id = this.showTempLine(data.view, point.location, point.intersect);
@@ -158,7 +158,7 @@ export class TrackingSnap implements ISnap {
 
     private rayDistanceAtScreen(view: IView, x: number, y: number, axis: Line): number {
         const start = view.worldToScreen(axis.point);
-        const vector = new XY(x - start.x, y - start.y);
+        const vector = new XY({ x: x - start.x, y: y - start.y });
         if (vector.isEqualTo(XY.zero)) return 0;
         const end = view.worldToScreen(axis.point.add(axis.direction.multiply(100000)));
         if (start.distanceTo(end) < Precision.Float) return vector.length();

@@ -3,7 +3,7 @@
 
 import {
     command,
-    Dimension,
+    Dimensions,
     type GeometryNode,
     type IStep,
     type PointSnapData,
@@ -31,7 +31,11 @@ export class Line extends CreateCommand {
     }
 
     protected override geometryNode(): GeometryNode {
-        return new LineNode(this.document, this.stepDatas[0].point!, this.stepDatas[1].point!);
+        return new LineNode({
+            document: this.document,
+            start: this.stepDatas[0].point!,
+            end: this.stepDatas[1].point!,
+        });
     }
 
     getSteps(): IStep[] {
@@ -52,7 +56,7 @@ export class Line extends CreateCommand {
     private readonly getSecondPointData = (): PointSnapData => {
         return {
             refPoint: () => this.stepDatas[0].point!,
-            dimension: Dimension.D1D2D3,
+            dimension: Dimensions.D1D2D3,
             validator: (point: XYZ) => {
                 return this.stepDatas[0].point!.distanceTo(point) > Precision.Distance;
             },

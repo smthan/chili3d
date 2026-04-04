@@ -9,17 +9,25 @@ import {
     property,
     type Result,
     serializable,
-    serialze,
+    serialize,
     type XYZ,
 } from "@chili3d/core";
 
-@serializable(["document", "normal", "center", "radius", "dz"])
+export interface CylinderNodeOptions {
+    document: IDocument;
+    normal: XYZ;
+    center: XYZ;
+    radius: number;
+    dz: number;
+}
+
+@serializable()
 export class CylinderNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.cylinder";
     }
 
-    @serialze()
+    @serialize()
     @property("circle.center")
     get center() {
         return this.getPrivateValue("center");
@@ -28,7 +36,7 @@ export class CylinderNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("center", center);
     }
 
-    @serialze()
+    @serialize()
     @property("circle.radius")
     get radius() {
         return this.getPrivateValue("radius");
@@ -37,7 +45,7 @@ export class CylinderNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("radius", dy);
     }
 
-    @serialze()
+    @serialize()
     @property("box.dz")
     get dz() {
         return this.getPrivateValue("dz");
@@ -46,17 +54,17 @@ export class CylinderNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dz", dz);
     }
 
-    @serialze()
+    @serialize()
     get normal(): XYZ {
         return this.getPrivateValue("normal");
     }
 
-    constructor(document: IDocument, normal: XYZ, center: XYZ, radius: number, dz: number) {
-        super(document);
-        this.setPrivateValue("normal", normal);
-        this.setPrivateValue("center", center);
-        this.setPrivateValue("radius", radius);
-        this.setPrivateValue("dz", dz);
+    constructor(options: CylinderNodeOptions) {
+        super(options);
+        this.setPrivateValue("normal", options.normal);
+        this.setPrivateValue("center", options.center);
+        this.setPrivateValue("radius", options.radius);
+        this.setPrivateValue("dz", options.dz);
     }
 
     generateShape(): Result<IShape> {

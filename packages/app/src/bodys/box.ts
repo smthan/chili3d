@@ -10,17 +10,25 @@ import {
     property,
     type Result,
     serializable,
-    serialze,
+    serialize,
     type XYZ,
 } from "@chili3d/core";
 
-@serializable(["document", "plane", "dx", "dy", "dz"])
+export interface BoxNodeOptions {
+    document: IDocument;
+    plane: Plane;
+    dx: number;
+    dy: number;
+    dz: number;
+}
+
+@serializable()
 export class BoxNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.box";
     }
 
-    @serialze()
+    @serialize()
     get plane(): Plane {
         return this.getPrivateValue("plane");
     }
@@ -33,7 +41,7 @@ export class BoxNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("plane", this.plane.translateTo(value));
     }
 
-    @serialze()
+    @serialize()
     @property("box.dx")
     get dx() {
         return this.getPrivateValue("dx");
@@ -42,7 +50,7 @@ export class BoxNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dx", dx);
     }
 
-    @serialze()
+    @serialize()
     @property("box.dy")
     get dy() {
         return this.getPrivateValue("dy");
@@ -51,7 +59,7 @@ export class BoxNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dy", dy);
     }
 
-    @serialze()
+    @serialize()
     @property("box.dz")
     get dz() {
         return this.getPrivateValue("dz");
@@ -60,12 +68,12 @@ export class BoxNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("dz", dz);
     }
 
-    constructor(document: IDocument, plane: Plane, dx: number, dy: number, dz: number) {
-        super(document);
-        this.setPrivateValue("plane", plane);
-        this.setPrivateValue("dx", dx);
-        this.setPrivateValue("dy", dy);
-        this.setPrivateValue("dz", dz);
+    constructor(options: BoxNodeOptions) {
+        super(options);
+        this.setPrivateValue("plane", options.plane);
+        this.setPrivateValue("dx", options.dx);
+        this.setPrivateValue("dy", options.dy);
+        this.setPrivateValue("dz", options.dz);
     }
 
     generateShape(): Result<IShape> {

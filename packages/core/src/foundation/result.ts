@@ -1,37 +1,43 @@
 // Part of the Chili3d Project, under the AGPL-3.0 License.
 // See LICENSE file in the project root for full license information.
 
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import type { IEqualityComparer } from "./equalityComparer";
 import { Logger } from "./logger";
 
-@serializable(["isOk", "value", "error"])
+export interface ResultOptions<T, E = string> {
+    isOk: boolean;
+    value: T | undefined;
+    error: E | undefined;
+}
+
+@serializable()
 export class Result<T, E = string> {
     readonly #isOk: boolean;
     readonly #value: T | undefined;
     readonly #error: E | undefined;
 
-    @serialze()
+    @serialize()
     get isOk(): boolean {
         return this.#isOk;
     }
 
-    @serialze()
+    @serialize()
     get value(): T {
         if (!this.#isOk) Logger.warn("Result is error");
         return this.#value!;
     }
 
-    @serialze()
+    @serialize()
     get error(): E {
         if (this.#isOk) Logger.warn("Result is ok");
         return this.#error!;
     }
 
-    constructor(isOk: boolean, value: T | undefined, error: E | undefined) {
-        this.#isOk = isOk;
-        this.#value = value;
-        this.#error = error;
+    constructor(options: ResultOptions<T, E>) {
+        this.#isOk = options.isOk;
+        this.#value = options.value;
+        this.#error = options.error;
     }
 
     parse<U>(): Result<U, E> {
@@ -51,11 +57,11 @@ export class Result<T, E = string> {
     }
 
     static ok<T>(value: T): Result<T, never> {
-        return new Result(true, value, undefined) as any;
+        return new Result({ isOk: true, value, error: undefined }) as any;
     }
 
     static err<E>(error: E): Result<any, E> {
-        return new Result(false, undefined, error) as any;
+        return new Result({ isOk: false, value: undefined, error }) as any;
     }
 }
 

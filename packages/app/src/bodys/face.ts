@@ -9,18 +9,23 @@ import {
     type IWire,
     ParameterShapeNode,
     Result,
-    ShapeType,
+    ShapeTypes,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "shapes"])
+export interface FaceOptions {
+    document: IDocument;
+    shapes: IEdge[] | IWire[];
+}
+
+@serializable()
 export class FaceNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.face";
     }
 
-    @serialze()
+    @serialize()
     get shapes(): IEdge[] | IWire[] {
         return this.getPrivateValue("shapes");
     }
@@ -28,13 +33,13 @@ export class FaceNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("shapes", values);
     }
 
-    constructor(document: IDocument, shapes: IEdge[] | IWire[]) {
-        super(document);
-        this.setPrivateValue("shapes", shapes);
+    constructor(options: FaceOptions) {
+        super(options);
+        this.setPrivateValue("shapes", options.shapes);
     }
 
     private isAllClosed(): boolean {
-        return this.shapes.every((shape) => shape.isClosed() || shape.shapeType === ShapeType.Wire);
+        return this.shapes.every((shape) => shape.isClosed() || shape.shapeType === ShapeTypes.wire);
     }
 
     private getWires(): IWire[] {
@@ -50,7 +55,7 @@ export class FaceNode extends ParameterShapeNode {
 
     private addClosedEdges(wires: IWire[]): void {
         for (const shape of this.shapes) {
-            if (shape.shapeType === ShapeType.Wire) {
+            if (shape.shapeType === ShapeTypes.wire) {
                 wires.push(shape as IWire);
             } else {
                 this.addUnclosedEdges(wires, [shape as IEdge]);

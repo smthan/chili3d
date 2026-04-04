@@ -9,16 +9,23 @@ import {
     ParameterShapeNode,
     type Result,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "profile", "axis", "angle"])
+export interface RevolveOptions {
+    document: IDocument;
+    profile: IShape;
+    axis: Line;
+    angle: number;
+}
+
+@serializable()
 export class RevolvedNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.revol";
     }
 
-    @serialze()
+    @serialize()
     get profile() {
         return this.getPrivateValue("profile");
     }
@@ -26,7 +33,7 @@ export class RevolvedNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("profile", value);
     }
 
-    @serialze()
+    @serialize()
     get axis() {
         return this.getPrivateValue("axis");
     }
@@ -34,7 +41,7 @@ export class RevolvedNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("axis", value);
     }
 
-    @serialze()
+    @serialize()
     get angle() {
         return this.getPrivateValue("angle");
     }
@@ -42,11 +49,11 @@ export class RevolvedNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("angle", value);
     }
 
-    constructor(document: IDocument, profile: IShape, axis: Line, angle: number) {
-        super(document);
-        this.setPrivateValue("profile", profile);
-        this.setPrivateValue("axis", axis);
-        this.setPrivateValue("angle", angle);
+    constructor(options: RevolveOptions) {
+        super({ document: options.document });
+        this.setPrivateValue("profile", options.profile);
+        this.setPrivateValue("axis", options.axis);
+        this.setPrivateValue("angle", options.angle);
     }
 
     override generateShape(): Result<IShape> {

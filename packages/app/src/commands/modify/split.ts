@@ -8,9 +8,10 @@ import {
     type IStep,
     type IVisualObject,
     SelectShapeStep,
-    ShapeType,
+    type ShapeType,
+    ShapeTypes,
     Transaction,
-    VisualState,
+    VisualStates,
 } from "@chili3d/core";
 import { MultistepCommand } from "../multistepCommand";
 
@@ -41,13 +42,17 @@ export class Split extends MultistepCommand {
                 let i = 1;
                 old.parent?.add(
                     ...subShapes.map((x) => {
-                        const model = new EditableShapeNode(this.document, old.name + i++, x);
+                        const model = new EditableShapeNode({
+                            document: this.document,
+                            name: old.name + i++,
+                            shape: x,
+                        });
                         model.transform = old.transform;
                         return model;
                     }),
                 );
             } else {
-                const model = new EditableShapeNode(this.document, old.name, shape);
+                const model = new EditableShapeNode({ document: this.document, name: old.name, shape });
                 model.transform = old.transform;
                 old.parent?.add(model);
             }
@@ -69,13 +74,17 @@ export class Split extends MultistepCommand {
 
     protected override getSteps(): IStep[] {
         return [
-            new SelectShapeStep(ShapeType.Shape, "prompt.select.shape", {
-                selectedState: VisualState.faceTransparent,
+            new SelectShapeStep(ShapeTypes.shape, "prompt.select.shape", {
+                selectedState: VisualStates.faceTransparent,
             }),
-            new SelectShapeStep(ShapeType.Edge | ShapeType.Wire | ShapeType.Face, "prompt.select.shape", {
-                multiple: true,
-                keepSelection: true,
-            }),
+            new SelectShapeStep(
+                (ShapeTypes.edge | ShapeTypes.wire | ShapeTypes.face) as ShapeType,
+                "prompt.select.shape",
+                {
+                    multiple: true,
+                    keepSelection: true,
+                },
+            ),
         ];
     }
 }

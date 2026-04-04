@@ -3,12 +3,19 @@
 
 import { Observable } from "../foundation";
 import type { XYZ } from "../math";
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import type { IView } from "./view";
 
-@serializable(["name", "cameraPosition", "cameraTarget", "cameraUp"])
+export interface ActOptions {
+    name: string;
+    cameraPosition: XYZ;
+    cameraTarget: XYZ;
+    cameraUp: XYZ;
+}
+
+@serializable()
 export class Act extends Observable {
-    @serialze()
+    @serialize()
     public get name() {
         return this.getPrivateValue("name");
     }
@@ -16,7 +23,7 @@ export class Act extends Observable {
         this.setProperty("name", value);
     }
 
-    @serialze()
+    @serialize()
     public get cameraPosition() {
         return this.getPrivateValue("cameraPosition");
     }
@@ -24,7 +31,7 @@ export class Act extends Observable {
         this.setProperty("cameraPosition", value);
     }
 
-    @serialze()
+    @serialize()
     public get cameraTarget() {
         return this.getPrivateValue("cameraTarget");
     }
@@ -32,7 +39,7 @@ export class Act extends Observable {
         this.setProperty("cameraTarget", value);
     }
 
-    @serialze()
+    @serialize()
     public get cameraUp() {
         return this.getPrivateValue("cameraUp");
     }
@@ -41,19 +48,19 @@ export class Act extends Observable {
     }
 
     static fromView(view: IView, name: string) {
-        return new Act(
+        return new Act({
             name,
-            view.cameraController.cameraPosition,
-            view.cameraController.cameraTarget,
-            view.cameraController.cameraUp,
-        );
+            cameraPosition: view.cameraController.cameraPosition,
+            cameraTarget: view.cameraController.cameraTarget,
+            cameraUp: view.cameraController.cameraUp,
+        });
     }
 
-    constructor(name: string, cameraPosition: XYZ, cameraTarget: XYZ, cameraUp: XYZ) {
+    constructor(options: ActOptions) {
         super();
-        this.setPrivateValue("name", name);
-        this.setPrivateValue("cameraPosition", cameraPosition);
-        this.setPrivateValue("cameraTarget", cameraTarget);
-        this.setPrivateValue("cameraUp", cameraUp);
+        this.setPrivateValue("name", options.name);
+        this.setPrivateValue("cameraPosition", options.cameraPosition);
+        this.setPrivateValue("cameraTarget", options.cameraTarget);
+        this.setPrivateValue("cameraUp", options.cameraUp);
     }
 }

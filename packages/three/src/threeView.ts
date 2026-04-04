@@ -21,7 +21,8 @@ import {
     Ray,
     type ShapeMeshRange,
     ShapeNode,
-    ShapeType,
+    type ShapeType,
+    ShapeTypes,
     ShapeTypeUtils,
     type ViewMode,
     type VisualNode,
@@ -30,7 +31,7 @@ import {
     type XYZ,
     type XYZLike,
 } from "@chili3d/core";
-import { div, span, svg } from "@chili3d/elements";
+import { div, span, svg } from "@chili3d/element";
 import {
     DirectionalLight,
     type Intersection,
@@ -311,7 +312,7 @@ export class ThreeView extends Observable implements IView {
             console.error("Unsupported camera type: " + this.camera);
         }
 
-        return new Ray(ThreeHelper.toXYZ(origin), ThreeHelper.toXYZ(direction));
+        return new Ray({ point: ThreeHelper.toXYZ(origin), direction: ThreeHelper.toXYZ(direction) });
     }
 
     screenToWorld(mx: number, my: number): XYZ {
@@ -323,7 +324,7 @@ export class ThreeView extends Observable implements IView {
         const cx = this.width / 2;
         const cy = this.height / 2;
         const vec = new Vector3(point.x, point.y, point.z).project(this.camera);
-        return new XY(Math.round(cx * vec.x + cx), Math.round(-cy * vec.y + cy));
+        return new XY({ x: Math.round(cx * vec.x + cx), y: Math.round(-cy * vec.y + cy) });
     }
 
     direction(): XYZ {
@@ -443,7 +444,7 @@ export class ThreeView extends Observable implements IView {
             cache.add(shape);
         };
 
-        if (shapeType === ShapeType.Shape) {
+        if (shapeType === ShapeTypes.shape) {
             addShape([]);
             return;
         }
@@ -557,22 +558,22 @@ export class ThreeView extends Observable implements IView {
         const { shape, subShape, index, groups, transform } = this.findShapeAndIndex(parent, intersection);
         if (!subShape || !shape) return { shape: undefined, indexes: [] };
 
-        if (ShapeTypeUtils.hasSolid(shapeType) && subShape.shapeType === ShapeType.Face) {
-            const solid = this.getAncestorAndIndex(ShapeType.Solid, subShape, shape, groups);
+        if (ShapeTypeUtils.hasSolid(shapeType) && subShape.shapeType === ShapeTypes.face) {
+            const solid = this.getAncestorAndIndex(ShapeTypes.solid, subShape, shape, groups);
             if (solid.shape) return solid;
         }
-        if (ShapeTypeUtils.hasShell(shapeType) && subShape.shapeType === ShapeType.Face) {
-            const shell = this.getAncestorAndIndex(ShapeType.Shell, subShape, shape, groups);
+        if (ShapeTypeUtils.hasShell(shapeType) && subShape.shapeType === ShapeTypes.face) {
+            const shell = this.getAncestorAndIndex(ShapeTypes.shell, subShape, shape, groups);
             if (shell.shape) return shell;
         }
-        if (ShapeTypeUtils.hasWire(shapeType) && subShape.shapeType === ShapeType.Edge) {
-            const wire = this.getAncestorAndIndex(ShapeType.Wire, subShape, shape, groups);
+        if (ShapeTypeUtils.hasWire(shapeType) && subShape.shapeType === ShapeTypes.edge) {
+            const wire = this.getAncestorAndIndex(ShapeTypes.wire, subShape, shape, groups);
             if (wire.shape) return wire;
         }
-        if (!ShapeTypeUtils.hasFace(shapeType) && subShape.shapeType === ShapeType.Face) {
+        if (!ShapeTypeUtils.hasFace(shapeType) && subShape.shapeType === ShapeTypes.face) {
             return { shape: undefined, indexes: [index] };
         }
-        if (!ShapeTypeUtils.hasEdge(shapeType) && subShape.shapeType === ShapeType.Edge) {
+        if (!ShapeTypeUtils.hasEdge(shapeType) && subShape.shapeType === ShapeTypes.edge) {
             return { shape: undefined, indexes: [index] };
         }
 

@@ -9,16 +9,21 @@ import {
     ParameterShapeNode,
     type Result,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "edges"])
+export interface WireOptions {
+    document: IDocument;
+    edges: IEdge[];
+}
+
+@serializable()
 export class WireNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.wire";
     }
 
-    @serialze()
+    @serialize()
     get edges(): IEdge[] {
         return this.getPrivateValue("edges");
     }
@@ -26,9 +31,9 @@ export class WireNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("edges", values);
     }
 
-    constructor(document: IDocument, edges: IEdge[]) {
-        super(document);
-        this.setPrivateValue("edges", edges);
+    constructor(options: WireOptions) {
+        super(options);
+        this.setPrivateValue("edges", options.edges);
     }
 
     override generateShape(): Result<IShape> {

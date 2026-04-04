@@ -9,17 +9,25 @@ import {
     property,
     type Result,
     serializable,
-    serialze,
+    serialize,
     type XYZ,
 } from "@chili3d/core";
 
-@serializable(["document", "normal", "center", "start", "angle"])
+export interface ArcOptions {
+    document: IDocument;
+    normal: XYZ;
+    center: XYZ;
+    start: XYZ;
+    angle: number;
+}
+
+@serializable()
 export class ArcNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.arc";
     }
 
-    @serialze()
+    @serialize()
     @property("circle.center")
     get center() {
         return this.getPrivateValue("center");
@@ -28,18 +36,18 @@ export class ArcNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("center", center);
     }
 
-    @serialze()
+    @serialize()
     @property("arc.start")
     get start(): XYZ {
         return this.getPrivateValue("start");
     }
 
-    @serialze()
+    @serialize()
     get normal(): XYZ {
         return this.getPrivateValue("normal");
     }
 
-    @serialze()
+    @serialize()
     @property("arc.angle")
     get angle() {
         return this.getPrivateValue("angle");
@@ -48,12 +56,12 @@ export class ArcNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("angle", value);
     }
 
-    constructor(document: IDocument, normal: XYZ, center: XYZ, start: XYZ, angle: number) {
-        super(document);
-        this.setPrivateValue("normal", normal);
-        this.setPrivateValue("center", center);
-        this.setPrivateValue("start", start);
-        this.setPrivateValue("angle", angle);
+    constructor(options: ArcOptions) {
+        super({ document: options.document });
+        this.setPrivateValue("normal", options.normal);
+        this.setPrivateValue("center", options.center);
+        this.setPrivateValue("start", options.start);
+        this.setPrivateValue("angle", options.angle);
     }
 
     generateShape(): Result<IShape, string> {

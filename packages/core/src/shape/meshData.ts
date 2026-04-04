@@ -3,30 +3,55 @@
 
 import { VisualConfig } from "../config";
 import type { Matrix4, XYZ } from "../math";
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import type { LineType } from "./lineType";
 import type { ISubShape } from "./shape";
 
-@serializable(["start", "count", "materialIndex"])
-export class MeshGroup {
-    @serialze()
+export interface MeshGroupOptions {
     start: number;
-    @serialze()
     count: number;
-    @serialze()
+    materialIndex: number;
+}
+
+@serializable()
+export class MeshGroup {
+    @serialize()
+    start: number;
+    @serialize()
+    count: number;
+    @serialize()
     materialIndex: number;
 
-    constructor(start: number, count: number, materialIndex: number) {
-        this.start = start;
-        this.count = count;
-        this.materialIndex = materialIndex;
+    constructor(options: MeshGroupOptions) {
+        this.start = options.start;
+        this.count = options.count;
+        this.materialIndex = options.materialIndex;
     }
 }
 
 export type MeshType = "surface" | "linesegments";
 
-@serializable([])
+export interface MeshOptions {
+    meshType?: MeshType;
+    position?: Float32Array;
+    normal?: Float32Array;
+    index?: Uint32Array;
+    color?: number | number[];
+    uv?: Float32Array;
+    groups?: MeshGroup[];
+}
+
+@serializable()
 export class Mesh {
+    constructor(options?: MeshOptions) {
+        this.meshType = options?.meshType ?? "linesegments";
+        this.position = options?.position;
+        this.normal = options?.normal;
+        this.index = options?.index;
+        this.color = options?.color ?? 0xfff;
+        this.uv = options?.uv;
+        this.groups = options?.groups ?? [];
+    }
     static createSurface(positionSize: number, indexSize: number) {
         const mesh = new Mesh();
         mesh.meshType = "surface";
@@ -44,25 +69,25 @@ export class Mesh {
         return mesh;
     }
 
-    @serialze()
+    @serialize()
     meshType: MeshType = "linesegments";
 
-    @serialze()
+    @serialize()
     position: Float32Array | undefined;
 
-    @serialze()
+    @serialize()
     normal: Float32Array | undefined = undefined;
 
-    @serialze()
+    @serialize()
     index: Uint32Array | undefined = undefined;
 
-    @serialze()
+    @serialize()
     color: number | number[] = 0xfff;
 
-    @serialze()
+    @serialize()
     uv: Float32Array | undefined = undefined;
 
-    @serialze()
+    @serialize()
     groups: MeshGroup[] = [];
 }
 

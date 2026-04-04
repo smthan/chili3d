@@ -10,17 +10,24 @@ import {
     property,
     type Result,
     serializable,
-    serialze,
+    serialize,
     type XYZ,
 } from "@chili3d/core";
 
-@serializable(["document", "plane", "dx", "dy"])
+export interface RectOptions {
+    document: IDocument;
+    plane: Plane;
+    dx: number;
+    dy: number;
+}
+
+@serializable()
 export class RectNode extends FacebaseNode {
     override display(): I18nKeys {
         return "body.rect";
     }
 
-    @serialze()
+    @serialize()
     @property("rect.dx")
     get dx() {
         return this.getPrivateValue("dx");
@@ -29,7 +36,7 @@ export class RectNode extends FacebaseNode {
         this.setPropertyEmitShapeChanged("dx", dx);
     }
 
-    @serialze()
+    @serialize()
     @property("rect.dy")
     get dy() {
         return this.getPrivateValue("dy");
@@ -38,16 +45,16 @@ export class RectNode extends FacebaseNode {
         this.setPropertyEmitShapeChanged("dy", dy);
     }
 
-    @serialze()
+    @serialize()
     get plane(): Plane {
         return this.getPrivateValue("plane");
     }
 
-    constructor(document: IDocument, plane: Plane, dx: number, dy: number) {
-        super(document);
-        this.setPrivateValue("plane", plane);
-        this.setPrivateValue("dx", dx);
-        this.setPrivateValue("dy", dy);
+    constructor(options: RectOptions) {
+        super({ document: options.document });
+        this.setPrivateValue("plane", options.plane);
+        this.setPrivateValue("dx", options.dx);
+        this.setPrivateValue("dy", options.dy);
     }
 
     generateShape(): Result<IShape, string> {

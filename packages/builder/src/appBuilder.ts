@@ -4,6 +4,7 @@
 import { Application, CommandService, EditEventHandler, EditorService, HotkeyService } from "@chili3d/app";
 import {
     Config,
+    Constants,
     I18n,
     type IApplication,
     type IDataExchange,
@@ -17,12 +18,10 @@ import {
     type Locale,
     Logger,
 } from "@chili3d/core";
-import type { IAdditionalModule } from "./additionalModule";
 import { DefaultDataExchange } from "./defaultDataExchange";
 
 export class AppBuilder {
     protected readonly _inits: (() => Promise<void>)[] = [];
-    protected readonly _additionalModules: IAdditionalModule[] = [];
     protected _storage?: IStorage;
     protected _visualFactory?: IVisualFactory;
     protected _shapeFactory?: IShapeFactory;
@@ -38,7 +37,8 @@ export class AppBuilder {
         this._inits.push(async () => {
             Logger.info("initializing api");
 
-            (globalThis as any).ChiliCore = await import("@chili3d/core");
+            (globalThis as any).Chili3dCore = await import("@chili3d/core");
+            (globalThis as any).Chili3dElement = await import("@chili3d/element");
         });
     }
 
@@ -64,6 +64,10 @@ export class AppBuilder {
 
             const db = await import("@chili3d/storage");
             this._storage = new db.IndexedDBStorage();
+            await this._storage.createDBIfNeeded(Constants.DBName, [
+                Constants.DocumentTable,
+                Constants.RecentTable,
+            ]);
         });
         return this;
     }
@@ -93,17 +97,10 @@ export class AppBuilder {
         this._inits.push(async () => {
             Logger.info("initializing MainWindow");
 
-            this.loadAdditionalI18n();
-
             const ui = await import("@chili3d/ui");
             const app = document.getElementById("app") as HTMLElement;
             this._window = new ui.MainWindow(await this.getRibbonTabs(), "iconfont.js", app);
         });
-        return this;
-    }
-
-    addAdditionalModules(...modules: IAdditionalModule[]): this {
-        this._additionalModules.push(...modules);
         return this;
     }
 
@@ -121,7 +118,6 @@ export class AppBuilder {
         const app = this.createApp();
         await this._window?.init(app);
         await this.loadDefaultPlugins(app);
-        this.loadAdditionalCommands();
 
         Logger.info("Application build completed");
 
@@ -129,7 +125,7 @@ export class AppBuilder {
     }
 
     protected async loadDefaultPlugins(app: IApplication) {
-        const folderUrl = window.location.href + "plugins/";
+        const folderUrl = window.location.origin + "/plugins/";
         try {
             const response = await fetch(folderUrl + "plugins.json");
             if (!response.ok) {
@@ -169,28 +165,6 @@ export class AppBuilder {
         }
         if (this._storage === undefined) {
             throw new Error("storage has not been initialized");
-        }
-    }
-
-    private loadAdditionalI18n() {
-        for (const module of this._additionalModules) {
-            module.i18n().forEach((local) => {
-                I18n.combineTranslation(local.language, local.translation);
-            });
-        }
-    }
-
-    private loadAdditionalCommands() {
-        for (const module of this._additionalModules) {
-            if (this._window) {
-                module.ribbonCommands().forEach((command) => {
-                    this._window!.ribbon.addRibbonCommand(
-                        command.tabName,
-                        command.groupName,
-                        command.command,
-                    );
-                });
-            }
         }
     }
 

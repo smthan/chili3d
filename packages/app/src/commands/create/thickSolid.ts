@@ -9,7 +9,7 @@ import {
     PubSub,
     property,
     SelectShapeStep,
-    ShapeType,
+    ShapeTypes,
     Transaction,
 } from "@chili3d/core";
 import { MultistepCommand } from "../multistepCommand";
@@ -38,11 +38,11 @@ export class ThickSolidCommand extends MultistepCommand {
                     PubSub.default.pub("showToast", "toast.converter.error");
                     return;
                 }
-                const model = new EditableShapeNode(
-                    this.document,
-                    I18n.translate("command.create.thickSolid"),
-                    subShape,
-                );
+                const model = new EditableShapeNode({
+                    document: this.document,
+                    name: I18n.translate("command.create.thickSolid"),
+                    shape: subShape,
+                });
 
                 const node = x.owner.node;
                 model.transform = node.transform;
@@ -54,6 +54,6 @@ export class ThickSolidCommand extends MultistepCommand {
     }
 
     protected override getSteps(): IStep[] {
-        return [new SelectShapeStep(ShapeType.Face, "prompt.select.faces", { multiple: true })];
+        return [new SelectShapeStep(ShapeTypes.face, "prompt.select.faces", { multiple: true })];
     }
 }

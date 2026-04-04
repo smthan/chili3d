@@ -8,26 +8,30 @@ import {
     type Serialized,
     Serializer,
     serializable,
-    serialze,
+    serialize,
 } from "../src";
 import { TestDocument } from "./testDocument";
 
-@serializable(["k1" as any])
+interface TestObjectOptions {
+    k1: string;
+}
+
+@serializable()
 class TestObject {
     protected k2: string = "k2";
     public k3: string = "k3";
 
-    @serialze()
+    @serialize()
     private k1: string;
-    @serialze()
+    @serialize()
     private k4: string = "k4";
-    @serialze()
+    @serialize()
     protected k5: string = "k5";
-    @serialze()
+    @serialize()
     public k6: string = "k6";
 
-    constructor(k1: string) {
-        this.k1 = k1;
+    constructor(options: TestObjectOptions) {
+        this.k1 = options.k1;
     }
 
     serialize(): Serialized {
@@ -36,13 +40,13 @@ class TestObject {
 }
 
 test("test Serializer", () => {
-    const obj = new TestObject("111");
+    const obj = new TestObject({ k1: "111" });
     const s = obj.serialize();
-    expect("k1" in s.properties).toBeTruthy();
-    expect("k4" in s.properties).toBeTruthy();
-    expect("k5" in s.properties).toBeTruthy();
-    expect("k6" in s.properties).toBeTruthy();
-    s.properties["k1"] = "222";
+    expect("k1" in s).toBeTruthy();
+    expect("k4" in s).toBeTruthy();
+    expect("k5" in s).toBeTruthy();
+    expect("k6" in s).toBeTruthy();
+    s["k1"] = "222";
     const obj2 = Serializer.deserializeObject({} as any, s);
     expect(obj2.k1).toBe("222");
 });
@@ -50,10 +54,10 @@ test("test Serializer", () => {
 test("test Node Serializer", () => {
     const doc: IDocument = new TestDocument() as any;
 
-    const n1 = new FolderNode(doc, "n1");
-    const n2 = new FolderNode(doc, "n2");
-    const n3 = new FolderNode(doc, "n3");
-    const n4 = new FolderNode(doc, "n4");
+    const n1 = new FolderNode({ document: doc, name: "n1" });
+    const n2 = new FolderNode({ document: doc, name: "n2" });
+    const n3 = new FolderNode({ document: doc, name: "n3" });
+    const n4 = new FolderNode({ document: doc, name: "n4" });
     n1.add(n2, n3);
     n2.add(n4);
     const s = NodeUtils.serializeNode(n1);

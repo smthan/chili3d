@@ -12,19 +12,27 @@ import {
     Precision,
     property,
     Result,
-    ShapeType,
+    ShapeTypes,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 import { WireFilletBuilder } from "./utils/WireFilletBuilder";
 
-@serializable(["document", "radius", "path", "bendRadius", "thickness"])
+export interface PipeOptions {
+    document: IDocument;
+    radius: number;
+    path: IWire | IEdge;
+    bendRadius?: number;
+    thickness?: number;
+}
+
+@serializable()
 export class PipeNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.pipe" as I18nKeys;
     }
 
-    @serialze()
+    @serialize()
     @property("circle.radius")
     get radius() {
         return this.getPrivateValue("radius");
@@ -33,7 +41,7 @@ export class PipeNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("radius", value);
     }
 
-    @serialze()
+    @serialize()
     get path() {
         return this.getPrivateValue("path");
     }
@@ -41,7 +49,7 @@ export class PipeNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("path", value);
     }
 
-    @serialze()
+    @serialize()
     @property("pipe.bendRadius")
     get bendRadius() {
         return this.getPrivateValue("bendRadius", 0);
@@ -50,7 +58,7 @@ export class PipeNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("bendRadius", value);
     }
 
-    @serialze()
+    @serialize()
     @property("option.command.thickness")
     get thickness() {
         return this.getPrivateValue("thickness", 0);
@@ -59,17 +67,23 @@ export class PipeNode extends ParameterShapeNode {
         this.setPropertyEmitShapeChanged("thickness", value);
     }
 
-    constructor(document: IDocument, radius: number, path: IWire | IEdge) {
-        super(document);
-        if (!path) console.error("PipeNode: path is null");
-        if (radius <= 0) console.error("PipeNode: radius must be > 0", radius);
-        this.setPrivateValue("radius", radius);
-        this.setPrivateValue("path", this.ensureWire(path));
+    constructor(options: PipeOptions) {
+        super(options);
+        if (!options.path) console.error("PipeNode: path is null");
+        if (options.radius <= 0) console.error("PipeNode: radius must be > 0", options.radius);
+        this.setPrivateValue("radius", options.radius);
+        this.setPrivateValue("path", this.ensureWire(options.path));
+        if (options.bendRadius !== undefined) {
+            this.setPrivateValue("bendRadius", options.bendRadius);
+        }
+        if (options.thickness !== undefined) {
+            this.setPrivateValue("thickness", options.thickness);
+        }
     }
 
     private ensureWire(path: IEdge | IWire) {
         let wire = path as IWire;
-        if (path.shapeType !== ShapeType.Wire) {
+        if (path.shapeType !== ShapeTypes.wire) {
             wire = this.document.application.shapeFactory.wire([path as unknown as IEdge]).value;
         }
         return wire;
@@ -115,7 +129,7 @@ export class PipeNode extends ParameterShapeNode {
             xVec = Plane.ZX.normal;
         }
 
-        const plane = new Plane(start, dir, xVec!);
+        const plane = new Plane({ origin: start, normal: dir, xvec: xVec! });
 
         const profileResult = this.document.application.shapeFactory.circle(
             plane.normal,

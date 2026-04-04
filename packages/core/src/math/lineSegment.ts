@@ -2,22 +2,27 @@
 // See LICENSE file in the project root for full license information.
 
 import { Precision } from "../foundation/precision";
-import { serializable, serialze } from "../serialize";
+import { serializable, serialize } from "../serialize";
 import type { XYZ } from "./xyz";
 
-@serializable(["start", "end"])
+export interface LineSegmentOptions {
+    start: XYZ;
+    end: XYZ;
+}
+
+@serializable()
 export class LineSegment {
-    @serialze()
+    @serialize({ readonly: true })
     readonly start: XYZ;
 
-    @serialze()
+    @serialize({ readonly: true })
     readonly end: XYZ;
 
-    constructor(start: XYZ, end: XYZ) {
-        this.start = start;
-        this.end = end;
+    constructor(options: LineSegmentOptions) {
+        this.start = options.start;
+        this.end = options.end;
 
-        if (start.isEqualTo(end)) {
+        if (options.start.isEqualTo(options.end)) {
             throw new Error("start and end can not be equal");
         }
     }

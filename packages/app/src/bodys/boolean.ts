@@ -8,23 +8,28 @@ import {
     ParameterShapeNode,
     Result,
     serializable,
-    serialze,
+    serialize,
 } from "@chili3d/core";
 
-@serializable(["document", "booleanShape"])
+export interface BooleanOptions {
+    document: IDocument;
+    booleanShape: IShape;
+}
+
+@serializable()
 export class BooleanNode extends ParameterShapeNode {
     override display(): I18nKeys {
         return "body.bolean";
     }
 
-    @serialze()
+    @serialize()
     get booleanShape(): IShape {
         return this.getPrivateValue("booleanShape");
     }
 
-    constructor(document: IDocument, shape: IShape) {
-        super(document);
-        this.setPrivateValue("booleanShape", shape);
+    constructor(options: BooleanOptions) {
+        super(options);
+        this.setPrivateValue("booleanShape", options.booleanShape);
     }
 
     override generateShape(): Result<IShape> {

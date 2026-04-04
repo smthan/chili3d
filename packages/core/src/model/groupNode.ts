@@ -2,12 +2,18 @@
 // See LICENSE file in the project root for full license information.
 
 import { Matrix4 } from "../math";
-import { serializable, serialze } from "../serialize";
-import { FolderNode } from "./folderNode";
+import { serializable, serialize } from "../serialize";
+import { FolderNode, type FolderNodeOptions } from "./folderNode";
 
-@serializable(["document", "name", "id"])
+export interface GroupNodeOptions extends FolderNodeOptions {}
+
+@serializable()
 export class GroupNode extends FolderNode {
-    @serialze()
+    constructor(options: GroupNodeOptions) {
+        super(options);
+    }
+
+    @serialize()
     get transform(): Matrix4 {
         return this.getPrivateValue("transform", Matrix4.identity());
     }
